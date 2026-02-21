@@ -14,13 +14,9 @@ try:
 except:
     st.warning("Logo non trouvé. Vérifiez que logoFCELEC.png est dans le dossier.")
 
-st.title("⚡ FC ELEC : Dimensionnement")
-st.markdown("Calcul de la section de câble et du disjoncteur selon la NF C 15-100.")
 
-# --- CONFIGURATION DE LA PAGE ---
-st.set_page_config(page_title="Dimensionnement Électrique NF C 15-100", layout="centered")
 
-st.title("⚡ Dimensionnement Câble & Disjoncteur")
+st.title("⚡ FC ELEC :Dimensionnement Câble & Disjoncteur")
 st.markdown("""
 Cette application permet de déterminer la section d'un câble et le calibre du disjoncteur 
 en fonction de la puissance, de la longueur et de la chute de tension admissible.
