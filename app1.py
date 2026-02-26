@@ -427,18 +427,48 @@ if check_password():
                 p_b = st.selectbox("Puissance", ["7.4 kW (32A Mono)", "22 kW (32A Tri)"])
                 st.info("Différentiel 30mA Type B. Câble : 10 mm² minimum.")
 
-# --- SECTION PUBLICITAIRE FC ELEC (Mise à jour des liens) ---
+# --- SECTION PUBLICITAIRE FC ELEC - DESIGN VISUEL ---
     st.sidebar.markdown("---")
-    st.sidebar.markdown("### 🎓 Formations & Contact")
-    st.sidebar.info("Envie de maîtriser l'ingénierie électrique ? Découvrez nos formations professionnelles !")
+    st.sidebar.markdown("<h2 style='text-align: center; color: #FF4B4B;'>🎓 FORMATIONS EXPERT</h2>", unsafe_allow_html=True)
+    
+    # Message d'accroche visuel
     st.sidebar.markdown("""
-    * 📱 **WhatsApp :** [+212 674-534264](https://wa.me/212674534264)
-    * 💼 **LinkedIn :** [FC ELEC - Formation & Consulting](https://www.linkedin.com/company/formation-et-consulting-en-electricite-fcelec/)
-    * 📘 **Facebook :** [FC ELEC Officiel](https://www.facebook.com/profile.php?id=61586577760070)
-    * ▶️ **YouTube :** [@FCELECACADEMY](https://www.youtube.com/@FCELECACADEMY)
-    """)
+        <div style="background-color: #e1f5fe; padding: 15px; border-radius: 10px; border-left: 5px solid #0288d1;">
+            <p style="color: #01579b; font-weight: bold; margin-bottom: 5px;">🚀 Boostez votre carrière !</p>
+            <p style="color: #0277bd; font-size: 0.9em;">Maîtrisez l'ingénierie électrique avec nos formations certifiantes.</p>
+        </div>
+        <br>
+    """, unsafe_allow_html=True)
+
+    # Boutons de réseaux sociaux visuels
+    st.sidebar.markdown(f"""
+        <a href="https://wa.me/212674534264" target="_blank" style="text-decoration: none;">
+            <div style="background-color: #25D366; color: white; padding: 10px; border-radius: 5px; text-align: center; margin-bottom: 10px; font-weight: bold;">
+                🟢 CONTACT WHATSAPP
+            </div>
+        </a>
+        <a href="https://www.linkedin.com/company/formation-et-consulting-en-electricite-fcelec/" target="_blank" style="text-decoration: none;">
+            <div style="background-color: #0077B5; color: white; padding: 10px; border-radius: 5px; text-align: center; margin-bottom: 10px; font-weight: bold;">
+                🔵 PAGE LINKEDIN
+            </div>
+        </a>
+        <a href="https://www.facebook.com/profile.php?id=61586577760070" target="_blank" style="text-decoration: none;">
+            <div style="background-color: #1877F2; color: white; padding: 10px; border-radius: 5px; text-align: center; margin-bottom: 10px; font-weight: bold;">
+                🔵 FACEBOOK OFFICIEL
+            </div>
+        </a>
+        <a href="https://www.youtube.com/@FCELECACADEMY" target="_blank" style="text-decoration: none;">
+            <div style="background-color: #FF0000; color: white; padding: 10px; border-radius: 5px; text-align: center; margin-bottom: 10px; font-weight: bold;">
+                🔴 YOUTUBE ACADEMY
+            </div>
+        </a>
+    """, unsafe_allow_html=True)
+
     st.sidebar.markdown("---")
 
-    if st.sidebar.button("🔴 Déconnexion"):
-        st.session_state.clear(); st.rerun()
+    # Bouton de déconnexion standard en bas
+    if st.sidebar.button("🔴 DÉCONNEXION", use_container_width=True):
+        st.session_state.clear()
+        st.rerun()
+
 
