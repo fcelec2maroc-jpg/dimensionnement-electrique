@@ -571,55 +571,40 @@ if check_password():
                 soumis = st.form_submit_button("✅ JE RÉSERVE MA PLACE MAINTENANT", type="primary", use_container_width=True)
                 
             # L'action if soumis est maintenant EN DEHORS du st.form, c'est mieux aligné
-            if soumis:
-                if not nom_client or not email_client or not tel_client or not pays_client or sexe_client == "Sélectionner":
-                    st.error("⚠️ Oups ! Il manque quelques informations obligatoires pour finaliser votre réservation.")
-                else:
+if soumis:
+                if nom_client and email_client and tel_client:
                     try:
-                        # --- 1. CONNEXION À GOOGLE SHEETS ---
+                        import json
                         scopes = ["https://www.googleapis.com/auth/spreadsheets"]
-                        creds = Credentials.from_service_account_file("secrets.json", scopes=scopes)
+                        
+                        # --- LA CORRECTION EST ICI ---
+                        # Au lieu de chercher un fichier 'secrets.json', on lit le coffre-fort
+                        creds_dict = json.loads(st.secrets["google_credentials"])
+                        creds = Credentials.from_service_account_info(creds_dict, scopes=scopes)
+                        # -----------------------------
+                        
                         client = gspread.authorize(creds)
                         
-                        # Ouverture du fichier Google Sheets (Le nom doit être exact)
+                        # Ouverture du fichier Google Sheets
                         feuille = client.open("Base_Inscriptions_FCELEC").sheet1
                         
-                        # --- 2. ENVOI DES DONNÉES ---
-                        nouvelle_ligne = [
-                            datetime.date.today().strftime("%d/%m/%Y"),
-                            nom_client,
-                            sexe_client,
-                            email_client,
-                            pays_client,
-                            tel_client,
-                            formation_choisie
-                        ]
+                        # Envoi des données
+                        feuille.append_row([
+                            datetime.date.today().strftime("%d/%m/%Y"), 
+                            nom_client, 
+                            email_client, 
+                            tel_client, 
+                            formation
+                        ])
                         
-                        # Ajout de la ligne dans le tableau en temps réel !
-                        feuille.append_row(nouvelle_ligne)
-
-                        # --- 3. MESSAGE DE SUCCÈS ET WHATSAPP ---
-                        st.success(f"🎉 Excellent choix, {nom_client} ! Votre dossier est enregistré de manière sécurisée.")
+                        st.success("🎉 Inscription enregistrée dans Google Sheets !")
                         
-                        texte_wa = (f"Bonjour FC ELEC !%0AJe souhaite sécuriser ma place pour la prochaine session.%0A%0A"
-                                    f"📋 *Mon Dossier :*%0A- *Nom :* {nom_client}%0A- *Sexe :* {sexe_client}%0A"
-                                    f"- *Pays :* {pays_client}%0A- *E-mail :* {email_client}%0A- *WhatsApp :* {tel_client}%0A%0A"
-                                    f"🎓 *Formation choisie :* {formation_choisie}")
-                        
-                        lien_wa = f"https://wa.me/212674534264?text={texte_wa}"
-                        
-                        st.markdown(f"""
-                        <div style="background-color: #e8f5e9; padding: 25px; border-radius: 8px; text-align: center; border: 2px solid #4CAF50; margin-top: 15px;">
-                            <h3 style="color: #2e7d32; margin-top:0;">Dernière étape (Très important) ⏳</h3>
-                            <p style="font-size: 1.1em; color: #333;">Envoyez-nous votre confirmation sur WhatsApp en cliquant sur le bouton ci-dessous :</p>
-                            <a href="{lien_wa}" target="_blank" style="display: inline-block; background-color: #25D366; color: white; padding: 15px 30px; border-radius: 5px; text-decoration: none; font-weight: bold; font-size: 1.2em; box-shadow: 0 4px 6px rgba(0,0,0,0.2);">
-                                💬 OUI, JE CONFIRME SUR WHATSAPP
-                            </a>
-                        </div>
-                        """, unsafe_allow_html=True)
+                        # Bouton WhatsApp
+                        msg = f"Bonjour, je confirme mon inscription pour {formation}. Nom: {nom_client}"
+                        st.markdown(f'<a href="https://wa.me/212674534264?text={msg.replace(" ", "%20")}" target="_blank" style="display:block; background:#25D366; color:white; text-align:center; padding:15px; border-radius:8px; text-decoration:none; font-weight:bold;">💬 CONFIRMER SUR WHATSAPP</a>', unsafe_allow_html=True)
                         
                     except Exception as e:
-                        st.error(f"Une erreur technique est survenue lors de l'enregistrement : {e}")
+                        st.error(f"Erreur technique : {e}")
 
             # --- ESPACE ADMINISTRATEUR SÉCURISÉ ---
             st.markdown("---")
@@ -716,3 +701,4 @@ if check_password():
     if st.sidebar.button("🔴 DÉCONNEXION", use_container_width=True):
         st.session_state.clear()
         st.rerun()
+
