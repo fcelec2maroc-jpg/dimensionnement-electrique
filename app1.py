@@ -456,53 +456,97 @@ if check_password():
                 p_b = st.selectbox("Puissance", ["7.4 kW (32A Mono)", "22 kW (32A Tri)"])
                 st.info("Différentiel 30mA Type B. Câble : 10 mm² minimum.")
 
-    # ---------------------------------------------------------
-    # MODULE 5 : CATALOGUE DES FORMATIONS (NOUVEAU)
+   # ---------------------------------------------------------
+    # MODULE 5 : CATALOGUE DES FORMATIONS (MIS À JOUR AVEC PDF)
     # ---------------------------------------------------------
     elif menu == "📚 5. Catalogue des Formations":
         st.title("📚 Catalogue des Formations FC ELEC ACADEMY")
         st.write("Transformez votre carrière avec nos formations 100% pratiques et certifiantes, dispensées par des experts du domaine.")
         st.markdown("---")
 
+        # Fonction utilitaire pour lire vos fichiers PDF locaux
+        def charger_pdf(chemin_fichier):
+            try:
+                with open(chemin_fichier, "rb") as pdf_file:
+                    return pdf_file.read()
+            except FileNotFoundError:
+                # Retourne un fichier texte factice si le PDF n'est pas encore dans le dossier
+                return b"Le catalogue PDF est en cours de mise a jour par l'equipe FC ELEC."
+
         # Ligne 1 des formations
         col1, col2 = st.columns(2)
         
         with col1:
             st.markdown("""
-            <div style="border: 1px solid #ddd; border-radius: 10px; padding: 20px; text-align: center; margin-bottom: 20px; box-shadow: 2px 2px 5px rgba(0,0,0,0.05); background-color: white;">
+            <div style="border: 1px solid #ddd; border-radius: 10px; padding: 20px; text-align: center; margin-bottom: 10px; box-shadow: 2px 2px 5px rgba(0,0,0,0.05); background-color: white;">
                 <h3 style="color: #0288d1;">⚡ Études Électriques & NF C 15-100</h3>
                 <p style="color: #555; font-size: 0.95em;">Maîtrisez les notes de calcul, le dimensionnement de câbles, les bilans de puissance et l'utilisation de logiciels professionnels (Caneco BT / AutoCAD).</p>
                 <p style="margin-bottom: 20px;"><b>Niveau :</b> Intermédiaire à Expert</p>
                 <a href="https://wa.me/212674534264?text=Bonjour,%20je%20souhaite%20avoir%20des%20informations%20sur%20la%20formation%20Études%20Électriques%20NF%20C%2015-100." target="_blank" style="background-color: #FF4B4B; color: white; padding: 10px 20px; border-radius: 5px; text-decoration: none; font-weight: bold;">👉 S'inscrire / Plus d'infos</a>
             </div>
             """, unsafe_allow_html=True)
+            
+            # Bouton de téléchargement du Plan de formation 1
+            pdf_etudes = charger_pdf("plan_formation_etudes_electriques.pdf")
+            st.download_button(
+                label="📄 Télécharger le Plan de Formation (PDF)",
+                data=pdf_etudes,
+                file_name="Plan_Formation_Etudes_Electriques_FCELEC.pdf",
+                mime="application/pdf",
+                use_container_width=True,
+                key="dl_etudes"
+            )
+            st.write("") # Espace visuel
 
         with col2:
             st.markdown("""
-            <div style="border: 1px solid #ddd; border-radius: 10px; padding: 20px; text-align: center; margin-bottom: 20px; box-shadow: 2px 2px 5px rgba(0,0,0,0.05); background-color: white;">
+            <div style="border: 1px solid #ddd; border-radius: 10px; padding: 20px; text-align: center; margin-bottom: 10px; box-shadow: 2px 2px 5px rgba(0,0,0,0.05); background-color: white;">
                 <h3 style="color: #0288d1;">☀️ Solaire Photovoltaïque</h3>
                 <p style="color: #555; font-size: 0.95em;">Apprenez à dimensionner et concevoir des installations solaires autonomes et raccordées au réseau, avec le logiciel PVsyst.</p>
                 <p style="margin-bottom: 20px;"><b>Niveau :</b> Tous niveaux</p>
                 <a href="https://wa.me/212674534264?text=Bonjour,%20je%20souhaite%20avoir%20des%20informations%20sur%20la%20formation%20Solaire%20Photovoltaïque." target="_blank" style="background-color: #FF4B4B; color: white; padding: 10px 20px; border-radius: 5px; text-decoration: none; font-weight: bold;">👉 S'inscrire / Plus d'infos</a>
             </div>
             """, unsafe_allow_html=True)
+            
+            # Bouton de téléchargement du Plan de formation 2
+            pdf_solaire = charger_pdf("plan_formation_solaire.pdf")
+            st.download_button(
+                label="📄 Télécharger le Plan de Formation (PDF)",
+                data=pdf_solaire,
+                file_name="Plan_Formation_Solaire_FCELEC.pdf",
+                mime="application/pdf",
+                use_container_width=True,
+                key="dl_solaire"
+            )
+            st.write("")
 
         # Ligne 2 des formations
         col3, col4 = st.columns(2)
         
         with col3:
             st.markdown("""
-            <div style="border: 1px solid #ddd; border-radius: 10px; padding: 20px; text-align: center; margin-bottom: 20px; box-shadow: 2px 2px 5px rgba(0,0,0,0.05); background-color: white;">
-                <h3 style="color: #0288d1;">⚙️ Électricité Industrielle & Automatisme</h3>
+            <div style="border: 1px solid #ddd; border-radius: 10px; padding: 20px; text-align: center; margin-bottom: 10px; box-shadow: 2px 2px 5px rgba(0,0,0,0.05); background-color: white;">
+                <h3 style="color: #0288d1;">⚙️ Électricité Industrielle</h3>
                 <p style="color: #555; font-size: 0.95em;">Conception d'armoires électriques, schémas de commande et de puissance, variateurs de vitesse et introduction aux automates programmables.</p>
                 <p style="margin-bottom: 20px;"><b>Niveau :</b> Pratique & Terrain</p>
                 <a href="https://wa.me/212674534264?text=Bonjour,%20je%20souhaite%20avoir%20des%20informations%20sur%20la%20formation%20Électricité%20Industrielle." target="_blank" style="background-color: #FF4B4B; color: white; padding: 10px 20px; border-radius: 5px; text-decoration: none; font-weight: bold;">👉 S'inscrire / Plus d'infos</a>
             </div>
             """, unsafe_allow_html=True)
+            
+            # Bouton de téléchargement du Plan de formation 3
+            pdf_indus = charger_pdf("plan_formation_industrielle.pdf")
+            st.download_button(
+                label="📄 Télécharger le Plan de Formation (PDF)",
+                data=pdf_indus,
+                file_name="Plan_Formation_Indus_FCELEC.pdf",
+                mime="application/pdf",
+                use_container_width=True,
+                key="dl_indus"
+            )
 
         with col4:
             st.markdown("""
-            <div style="border: 1px solid #ddd; border-radius: 10px; padding: 20px; text-align: center; margin-bottom: 20px; box-shadow: 2px 2px 5px rgba(0,0,0,0.05); background-color: white;">
+            <div style="border: 1px solid #ddd; border-radius: 10px; padding: 20px; text-align: center; margin-bottom: 10px; box-shadow: 2px 2px 5px rgba(0,0,0,0.05); background-color: white;">
                 <h3 style="color: #0288d1;">🚘 Bornes de Recharge (IRVE)</h3>
                 <p style="color: #555; font-size: 0.95em;">Le marché de l'avenir ! Apprenez les normes, le dimensionnement et les règles d'installation des Infrastructures de Recharge pour Véhicules Électriques.</p>
                 <p style="margin-bottom: 20px;"><b>Niveau :</b> Spécialisation</p>
@@ -510,8 +554,18 @@ if check_password():
             </div>
             """, unsafe_allow_html=True)
             
+            # Bouton de téléchargement du Plan de formation 4
+            pdf_irve = charger_pdf("plan_formation_irve.pdf")
+            st.download_button(
+                label="📄 Télécharger le Plan de Formation (PDF)",
+                data=pdf_irve,
+                file_name="Plan_Formation_IRVE_FCELEC.pdf",
+                mime="application/pdf",
+                use_container_width=True,
+                key="dl_irve"
+            )
+            
         st.info("💡 **Vous souhaitez une formation sur-mesure pour votre entreprise ?** Contactez-nous pour un devis personnalisé !")
-
     # ---------------------------------------------------------
     # PIED DE PAGE (FOOTER) - VISIBLE SUR TOUTES LES PAGES
     # ---------------------------------------------------------
@@ -564,3 +618,4 @@ if check_password():
     if st.sidebar.button("🔴 DÉCONNEXION", use_container_width=True):
         st.session_state.clear()
         st.rerun()
+
