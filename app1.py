@@ -521,37 +521,57 @@ if check_password():
                 """, unsafe_allow_html=True)
                 st.download_button("📄 Télécharger le Plan (PDF)", data=charger_pdf("plan_formation_irve.pdf"), file_name="Plan_IRVE.pdf", mime="application/pdf", use_container_width=True)
 
-        # ==========================================
-        # ONGLET 2 : LE FORMULAIRE ET L'ESPACE ADMIN
+    # ==========================================
+        # ONGLET 2 : LE FORMULAIRE D'INSCRIPTION ULTRA-ATTRACTIF
         # ==========================================
         with tab_inscription:
-            st.markdown("### 🎓 Formulaire Officiel d'Inscription")
             
+            # --- EN-TÊTE ATTRACTIF (DESIGN PREMIUM) ---
+            st.markdown("""
+            <div style="background: linear-gradient(135deg, #01579b, #0288d1); padding: 30px; border-radius: 12px; text-align: center; color: white; margin-bottom: 25px; box-shadow: 0 8px 16px rgba(0,0,0,0.15);">
+                <h2 style="margin: 0; font-size: 2.2em; font-weight: 800; text-transform: uppercase; letter-spacing: 1px;">🚀 Propulsez Votre Carrière !</h2>
+                <p style="margin: 15px 0 0 0; font-size: 1.1em; opacity: 0.95;">
+                    Rejoignez l'élite de l'ingénierie électrique avec <b>FC ELEC ACADEMY</b>.<br>
+                    Formations 100% pratiques • Experts du terrain • Attestation reconnue
+                </p>
+            </div>
+            """, unsafe_allow_html=True)
+            
+            st.info("🔥 **Attention : Nos sessions se remplissent vite !** Remplissez ce formulaire d'inscription rapide pour bloquer votre place. Un expert vous contactera sous 24h.")
+            
+            # --- LE FORMULAIRE ---
             with st.form("formulaire_inscription"):
+                st.markdown("### 📋 Vos Coordonnées")
                 col_f1, col_f2 = st.columns(2)
                 
-                nom_client = col_f1.text_input("Nom et Prénom *")
-                sexe_client = col_f2.selectbox("Sexe *", ["Sélectionner", "Homme", "Femme"])
+                nom_client = col_f1.text_input("👤 Nom et Prénom *")
+                sexe_client = col_f2.selectbox("🚻 Sexe *", ["Sélectionner", "Homme", "Femme"])
                 
-                email_client = col_f1.text_input("Adresse E-mail *", placeholder="exemple@email.com")
-                pays_client = col_f2.text_input("Pays *", placeholder="Ex: Maroc, France...")
+                email_client = col_f1.text_input("📧 Adresse E-mail *", placeholder="exemple@email.com")
+                pays_client = col_f2.text_input("🌍 Pays de résidence *", placeholder="Ex: Maroc, France, Sénégal...")
                 
-                tel_client = st.text_input("Numéro WhatsApp *", placeholder="+212 6 XX XX XX XX")
+                tel_client = st.text_input("📱 Numéro WhatsApp (avec indicatif) *", placeholder="+212 6 XX XX XX XX")
                 
-                formation_choisie = st.selectbox("Sélectionnez la formation souhaitée *", [
-                    "Études Électriques & NF C 15-100", "Solaire Photovoltaïque",
-                    "Électricité Industrielle & Automatisme", "Bornes de Recharge (IRVE)",
-                    "Formation Sur-Mesure (Entreprise)"
+                st.markdown("### 🎯 Votre Projet")
+                formation_choisie = st.selectbox("💡 Quelle formation va booster votre avenir ? *", [
+                    "⚡ Études Électriques & NF C 15-100",
+                    "☀️ Solaire Photovoltaïque",
+                    "⚙️ Électricité Industrielle & Automatisme",
+                    "🚘 Bornes de Recharge (IRVE)",
+                    "🏢 Formation Sur-Mesure (Entreprise)"
                 ])
                 
-                st.markdown("*Champs obligatoires")
-                soumis = st.form_submit_button("🚀 Valider mon inscription", type="primary")
+                st.markdown("<small><i>* Champs obligatoires pour valider le dossier</i></small>", unsafe_allow_html=True)
+                st.markdown("<br>", unsafe_allow_html=True) # Espace
+                
+                # BOUTON D'ACTION PRINCIPAL (CALL TO ACTION)
+                soumis = st.form_submit_button("✅ JE RÉSERVE MA PLACE MAINTENANT", type="primary", use_container_width=True)
                 
                 if soumis:
                     if not nom_client or not email_client or not tel_client or not pays_client or sexe_client == "Sélectionner":
-                        st.error("⚠️ Veuillez remplir tous les champs obligatoires avec l'astérisque (*).")
+                        st.error("⚠️ Oups ! Il manque quelques informations obligatoires pour finaliser votre réservation.")
                     else:
-                        # 1. SAUVEGARDE DANS LA BASE DE DONNÉES
+                        # 1. SAUVEGARDE EN BASE DE DONNÉES
                         nouvelle_inscription = {
                             "Date": datetime.date.today().strftime("%d/%m/%Y"),
                             "Nom et Prénom": nom_client,
@@ -563,72 +583,65 @@ if check_password():
                         }
                         st.session_state.base_inscriptions.append(nouvelle_inscription)
 
-                        # 2. MESSAGE DE SUCCÈS ET LIEN WHATSAPP
-                        st.success(f"✅ Félicitations {nom_client} ! Votre demande a été enregistrée dans notre base de données.")
+                        # 2. MESSAGE DE SUCCÈS
+                        st.success(f"🎉 Excellent choix, {nom_client} ! Votre dossier de pré-inscription est créé.")
                         
-                        texte_wa = (f"Bonjour FC ELEC !%0AJe souhaite m'inscrire.%0A%0A"
-                                    f"📋 *Mes coordonnées :*%0A- *Nom :* {nom_client}%0A- *Sexe :* {sexe_client}%0A"
+                        texte_wa = (f"Bonjour FC ELEC !%0AJe souhaite sécuriser ma place pour la prochaine session.%0A%0A"
+                                    f"📋 *Mon Dossier :*%0A- *Nom :* {nom_client}%0A- *Sexe :* {sexe_client}%0A"
                                     f"- *Pays :* {pays_client}%0A- *E-mail :* {email_client}%0A- *WhatsApp :* {tel_client}%0A%0A"
-                                    f"🎓 *Formation :* {formation_choisie}")
+                                    f"🎓 *Formation choisie :* {formation_choisie}")
                         
                         lien_wa = f"https://wa.me/212674534264?text={texte_wa}"
                         
                         st.markdown(f"""
-                        <div style="background-color: #e8f5e9; padding: 20px; border-radius: 8px; text-align: center; border: 2px solid #4CAF50; margin-top: 15px;">
-                            <h4 style="color: #2e7d32; margin-top:0;">Finalisez sur WhatsApp !</h4>
-                            <a href="{lien_wa}" target="_blank" style="display: inline-block; background-color: #25D366; color: white; padding: 12px 25px; border-radius: 5px; text-decoration: none; font-weight: bold; font-size: 1.2em;">
-                                💬 Confirmer mon inscription
+                        <div style="background-color: #e8f5e9; padding: 25px; border-radius: 8px; text-align: center; border: 2px solid #4CAF50; margin-top: 15px;">
+                            <h3 style="color: #2e7d32; margin-top:0;">Dernière étape (Très important) ⏳</h3>
+                            <p style="font-size: 1.1em; color: #333;">Pour valider définitivement votre place, envoyez-nous votre confirmation sur WhatsApp en cliquant sur le bouton ci-dessous :</p>
+                            <a href="{lien_wa}" target="_blank" style="display: inline-block; background-color: #25D366; color: white; padding: 15px 30px; border-radius: 5px; text-decoration: none; font-weight: bold; font-size: 1.2em; box-shadow: 0 4px 6px rgba(0,0,0,0.2); transition: 0.3s;">
+                                💬 OUI, JE CONFIRME SUR WHATSAPP
                             </a>
                         </div>
                         """, unsafe_allow_html=True)
-# --- ESPACE ADMINISTRATEUR SÉCURISÉ ---
+
+            # --- ESPACE ADMINISTRATEUR SÉCURISÉ ---
             st.markdown("---")
             with st.expander("🔐 Accès Administrateur FC ELEC"):
-                # Initialisation de la variable de connexion
                 if "admin_connecte" not in st.session_state:
                     st.session_state.admin_connecte = False
 
-                # 1. SI L'ADMIN N'EST PAS CONNECTÉ -> On affiche le champ mot de passe
                 if not st.session_state.admin_connecte:
-                    st.info("Cette section est réservée à la direction FC ELEC.")
+                    st.info("Espace sécurisé. Réservé à la direction FC ELEC.")
                     mot_de_passe = st.text_input("Mot de passe administrateur :", type="password")
                     
-                    if st.button("Déverrouiller"):
-                        # REMPLACEZ 'FCELEC2026' PAR LE MOT DE PASSE DE VOTRE CHOIX
+                    if st.button("Déverrouiller la base de données"):
                         if mot_de_passe == "FCELEC2026": 
                             st.session_state.admin_connecte = True
-                            st.rerun() # Rafraîchit la page pour afficher le menu caché
+                            st.rerun()
                         else:
-                            st.error("❌ Mot de passe incorrect.")
+                            st.error("❌ Accès refusé.")
                 
-                # 2. SI L'ADMIN EST CONNECTÉ -> On affiche les données et le téléchargement
                 if st.session_state.admin_connecte:
-                    st.success("✅ Mode Administrateur activé.")
-                    
-                    # Bouton pour se déconnecter et refermer le cadenas
-                    if st.button("🔒 Se déconnecter"):
+                    st.success("✅ Connexion réussie.")
+                    if st.button("🔒 Verrouiller la session"):
                         st.session_state.admin_connecte = False
                         st.rerun()
                         
-                    st.markdown("#### 📋 Base de données des inscrits")
+                    st.markdown("#### 📊 Tableau de bord des inscriptions")
                     
                     if not st.session_state.base_inscriptions:
-                        st.warning("Aucune inscription pour le moment.")
+                        st.warning("Aucun prospect enregistré pour le moment.")
                     else:
-                        # Affichage du tableau
                         df_inscrits = pd.DataFrame(st.session_state.base_inscriptions)
                         st.dataframe(df_inscrits, use_container_width=True)
                         
-                        # Création du fichier Excel en mémoire
                         output_excel = BytesIO()
                         with pd.ExcelWriter(output_excel, engine='openpyxl') as writer:
-                            df_inscrits.to_excel(writer, index=False, sheet_name='Inscriptions_FCELEC')
+                            df_inscrits.to_excel(writer, index=False, sheet_name='Inscriptions')
                         
-                        # Bouton de téléchargement Excel
                         st.download_button(
-                            label="📥 Télécharger la base de données (Excel)",
+                            label="📥 TÉLÉCHARGER LE FICHIER EXCEL CLIENTS",
                             data=output_excel.getvalue(),
-                            file_name=f"Inscriptions_FCELEC_{datetime.date.today().strftime('%d_%m_%Y')}.xlsx",
+                            file_name=f"Base_Clients_FCELEC_{datetime.date.today().strftime('%d_%m_%Y')}.xlsx",
                             mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
                             type="primary"
                         )
@@ -684,6 +697,7 @@ if check_password():
     if st.sidebar.button("🔴 DÉCONNEXION", use_container_width=True):
         st.session_state.clear()
         st.rerun()
+
 
 
 
