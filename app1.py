@@ -620,7 +620,7 @@ if soumis:
                             st.error(f"Une erreur technique est survenue lors de l'enregistrement : {e}")
 
             # --- ESPACE ADMINISTRATEUR SÉCURISÉ ---
-st.markdown("---")
+    st.markdown("---")
         with st.expander("🔐 Accès Administrateur FC ELEC"):
                 if "admin_connecte" not in st.session_state:
                     st.session_state.admin_connecte = False
@@ -713,6 +713,7 @@ st.markdown("---")
     if st.sidebar.button("🔴 DÉCONNEXION", use_container_width=True):
         st.session_state.clear()
         st.rerun()
+
 
 
 
