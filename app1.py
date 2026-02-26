@@ -115,16 +115,17 @@ if check_password():
     st.sidebar.markdown("---")
     st.sidebar.markdown("<h3 style='text-align: center; color: #FF4B4B;'>🎓 FORMATIONS EXPERT</h3>", unsafe_allow_html=True)
     
+    # Encart Premium pour la formation
     st.sidebar.markdown("""
-        <div style="background-color: #e1f5fe; padding: 10px; border-radius: 10px; border-left: 5px solid #0288d1; margin-bottom: 15px;">
-            <p style="color: #01579b; font-weight: bold; margin-bottom: 5px; font-size: 0.9em;">🚀 Boostez votre carrière !</p>
-            <p style="color: #0277bd; font-size: 0.8em; margin: 0;">Maîtrisez l'ingénierie électrique avec nos formations certifiantes.</p>
+        <div style="background: linear-gradient(135deg, #01579b, #0288d1); padding: 15px; border-radius: 10px; margin-bottom: 15px; text-align: center; box-shadow: 0 4px 6px rgba(0,0,0,0.1);">
+            <p style="color: white; font-weight: bold; margin-bottom: 5px; font-size: 1.1em;">🚀 Boostez votre carrière !</p>
+            <p style="color: #e1f5fe; font-size: 0.85em; margin: 0;">Devenez un expert recherché sur le marché avec nos formations pratiques et certifiantes.</p>
         </div>
     """, unsafe_allow_html=True)
 
     st.sidebar.markdown(f"""
         <a href="https://wa.me/212674534264" target="_blank" style="text-decoration: none;">
-            <div style="background-color: #25D366; color: white; padding: 10px; border-radius: 5px; text-align: center; margin-bottom: 8px; font-weight: bold; font-size: 0.9em;">🟢 WHATSAPP</div>
+            <div style="background-color: #25D366; color: white; padding: 10px; border-radius: 5px; text-align: center; margin-bottom: 8px; font-weight: bold; font-size: 0.9em; transition: 0.3s;">🟢 WHATSAPP</div>
         </a>
         <a href="https://www.linkedin.com/company/formation-et-consulting-en-electricite-fcelec/" target="_blank" style="text-decoration: none;">
             <div style="background-color: #0077B5; color: white; padding: 10px; border-radius: 5px; text-align: center; margin-bottom: 8px; font-weight: bold; font-size: 0.9em;">🔵 LINKEDIN</div>
@@ -224,7 +225,6 @@ if check_password():
                 pdf.set_font("Helvetica", "B", 8)
                 pdf.set_fill_color(200, 200, 200)
                 
-                # CORRECTION : Rééquilibrage total des largeurs pour que le Type de Câble ait de la place
                 headers = ["Tab.", "Repere", "Type Cable", "U", "L(m)", "Ib(A)", "Disj.", "Section", "dU(%)"]
                 widths = [18, 25, 35, 10, 12, 15, 15, 42, 18] # Somme exacte = 190
                 
@@ -237,9 +237,8 @@ if check_password():
                     pdf.cell(widths[0], 8, sanitize_text(row.get("Tableau", "TGBT"), 12), 1)
                     pdf.cell(widths[1], 8, sanitize_text(row["Repère"], 18), 1)
                     
-                    # CORRECTION : Coupe propre du nom (garde "U1000 R2V / RO2V" entier par exemple)
                     raw_type = row.get("Type Câble", "U1000 R2V")
-                    clean_type = sanitize_text(raw_type.split(" (")[0], 25) # On autorise 25 caractères sans couper
+                    clean_type = sanitize_text(raw_type.split(" (")[0], 25) 
                     pdf.cell(widths[2], 8, clean_type, 1, 0, 'C')
                     
                     pdf.cell(widths[3], 8, str(row["Tension"])[0:3], 1, 0, 'C')
@@ -460,7 +459,17 @@ if check_password():
     # PIED DE PAGE (FOOTER) - VISIBLE SUR TOUTES LES PAGES
     # ---------------------------------------------------------
     st.markdown("<br><br>", unsafe_allow_html=True)
-    st.markdown("---")
+    
+    # Bannièree Premium d'appel à l'action pour les formations
+    st.markdown("""
+    <div style="background-color: #e3f2fd; padding: 25px; border-radius: 10px; text-align: center; border-left: 6px solid #0288d1; margin-bottom: 30px; box-shadow: 0 4px 6px rgba(0,0,0,0.05);">
+        <h3 style="color: #01579b; margin-top: 0; font-size: 1.4em;">🎓 Prêt à maîtriser l'ingénierie électrique ?</h3>
+        <p style="color: #0277bd; font-size: 1.1em; margin-bottom: 20px;">Rejoignez <b>FC ELEC ACADEMY</b> ! Des formations 100% pratiques et certifiantes pour les professionnels et étudiants.</p>
+        <a href="https://wa.me/212674534264" target="_blank" style="text-decoration: none; background-color: #FF4B4B; color: white; padding: 12px 25px; border-radius: 5px; font-weight: bold; transition: 0.3s;">
+            👉 Demander le catalogue des formations
+        </a>
+    </div>
+    """, unsafe_allow_html=True)
     
     foot1, foot2, foot3, foot4 = st.columns(4)
     
@@ -471,8 +480,8 @@ if check_password():
         
     with foot2:
         st.markdown("#### 📱 Contact")
-        st.write("WhatsApp : +212 674-534264")
-        st.write("Email : contact@fcelec.ma")
+        st.write("WhatsApp : [+212 674-534264](https://wa.me/212674534264)")
+        st.write("Email : [fcelec2.maroc@gmail.com](mailto:fcelec2.maroc@gmail.com)")
         
     with foot3:
         st.markdown("#### 🌐 Réseaux")
@@ -481,7 +490,7 @@ if check_password():
 
     with foot4:
         st.markdown("#### 🚀 Services")
-        st.write("Notes de calcul NF C 15-100")
+        st.write("Formations certifiantes")
         st.write("Accompagnement de projets")
 
     st.markdown(
