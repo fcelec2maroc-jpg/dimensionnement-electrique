@@ -3,3 +3,7 @@ Pillow
 fpdf2
 pandas
 openpyxl
+pandas
+fpdf
+gspread
+google-auth
