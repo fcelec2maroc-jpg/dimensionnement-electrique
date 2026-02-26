@@ -697,6 +697,3 @@ if check_password()
     if st.sidebar.button(🔴 DÉCONNEXION, use_container_width=True)
         st.session_state.clear()
         st.rerun()
-
-
-
