@@ -439,5 +439,42 @@ if check_password():
     """)
     st.sidebar.markdown("---")
 
+    # --- PIED DE PAGE VISUEL (FOOTER) ---
+    st.markdown("---") # Ligne de séparation
+    
+    # Création de 4 colonnes pour un rendu équilibré
+    foot1, foot2, foot3, foot4 = st.columns(4)
+    
+    with foot1:
+        st.markdown("#### 🎓 FC ELEC")
+        st.write("Formation & Consulting en Électricité")
+        
+    with foot2:
+        st.markdown("#### 📱 Contact")
+        st.write("WhatsApp : +212 674-534264")
+        st.write("Email : contact@fcelec.ma") # Optionnel : remplacez par votre email
+        
+    with foot3:
+        st.markdown("#### 🌐 Réseaux")
+        st.markdown("[LinkedIn](https://www.linkedin.com/company/formation-et-consulting-en-electricite-fcelec/) | [YouTube](https://www.youtube.com/@FCELECACADEMY)")
+        st.markdown("[Facebook](https://www.facebook.com/profile.php?id=61586577760070)")
+
+    with foot4:
+        st.markdown("#### 🚀 Services")
+        st.write("Notes de calcul NF C 15-100")
+        st.write("Accompagnement de projets")
+
+    # Bandeau final stylisé
+    st.markdown(
+        """
+        <div style="background-color: #0e1117; padding: 10px; border-radius: 5px; text-align: center; border-top: 2px solid #FF4B4B; margin-top: 20px;">
+            <p style="color: white; font-size: 0.8em; margin: 0;">
+                © 2026 <b>FC ELEC EXPERT</b> | Application gratuite pour la communauté des ingénieurs électriciens.
+            </p>
+        </div>
+        """, 
+        unsafe_allow_html=True
+    )
     if st.sidebar.button("🔴 Déconnexion"):
         st.session_state.clear(); st.rerun()
+
