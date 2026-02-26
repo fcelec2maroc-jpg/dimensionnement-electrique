@@ -427,6 +427,17 @@ if check_password():
                 p_b = st.selectbox("Puissance", ["7.4 kW (32A Mono)", "22 kW (32A Tri)"])
                 st.info("Différentiel 30mA Type B. Câble : 10 mm² minimum.")
 
+    # --- SECTION PUBLICITAIRE FC ELEC ---
     st.sidebar.markdown("---")
+    st.sidebar.markdown("### 🎓 Formations & Contact")
+    st.sidebar.info("Envie de maîtriser l'ingénierie électrique ? Découvrez nos formations professionnelles !")
+    st.sidebar.markdown("""
+    * 📱 **WhatsApp :** [+212 674-534264](https://wa.me/212674534264)
+    * 💼 **LinkedIn :** [FC ELEC - Formation & Consulting](https://www.linkedin.com/search/results/all/?keywords=FC%20ELEC)
+    * 📘 **Facebook :** [Fc elec officiel](https://www.facebook.com/search/top?q=Fc%20elec%20officiel)
+    * ▶️ **YouTube :** [@FCELECACADEMY](https://www.youtube.com/@FCELECACADEMY)
+    """)
+    st.sidebar.markdown("---")
+
     if st.sidebar.button("🔴 Déconnexion"):
         st.session_state.clear(); st.rerun()
