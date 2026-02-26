@@ -13,6 +13,7 @@ st.markdown("""
     <style>
     .reportview-container { background: #f4f6f9; }
     .stButton>button { border-radius: 5px; font-weight: bold; }
+    .footer-link { color: #FF4B4B; text-decoration: none; font-weight: bold; }
     </style>
 """, unsafe_allow_html=True)
 
@@ -37,7 +38,6 @@ def sanitize_text(text, max_len=30):
     if not isinstance(text, str):
         return str(text)
     clean = text.replace("φ", "phi").replace("€", "Euros").replace("é", "e").replace("è", "e").replace("à", "a").replace("É", "E")
-    # Forcer l'encodage pour ignorer les caractères que FPDF ne peut pas imprimer (évite le crash)
     clean = clean.encode('latin-1', 'ignore').decode('latin-1')
     return clean[:max_len] + "..." if len(clean) > max_len else clean
 
@@ -62,7 +62,7 @@ class FCELEC_Report(FPDF):
         self.set_font("Helvetica", "I", 8)
         self.set_text_color(128, 128, 128)
         self.line(10, 282, 200, 282)
-        self.cell(0, 5, f"FC ELEC - Bureau d'Etudes | WhatsApp : +212 6 74 53 42 64 | Page {self.page_no()}", 0, 0, "C")
+        self.cell(0, 5, f"FC ELEC - WhatsApp : +212 6 74 53 42 64 | Page {self.page_no()}", 0, 0, "C")
 
 # --- SÉCURITÉ ---
 def check_password():
@@ -110,6 +110,34 @@ if check_password():
         "💰 3. Nomenclature & Devis",
         "📉 4. Outils (Cos φ & IRVE)"
     ])
+
+    # --- SECTION PUBLICITAIRE FC ELEC (SIDEBAR) ---
+    st.sidebar.markdown("---")
+    st.sidebar.markdown("<h3 style='text-align: center; color: #FF4B4B;'>🎓 FORMATIONS EXPERT</h3>", unsafe_allow_html=True)
+    
+    st.sidebar.markdown("""
+        <div style="background-color: #e1f5fe; padding: 10px; border-radius: 10px; border-left: 5px solid #0288d1; margin-bottom: 15px;">
+            <p style="color: #01579b; font-weight: bold; margin-bottom: 5px; font-size: 0.9em;">🚀 Boostez votre carrière !</p>
+            <p style="color: #0277bd; font-size: 0.8em; margin: 0;">Maîtrisez l'ingénierie électrique avec nos formations certifiantes.</p>
+        </div>
+    """, unsafe_allow_html=True)
+
+    st.sidebar.markdown(f"""
+        <a href="https://wa.me/212674534264" target="_blank" style="text-decoration: none;">
+            <div style="background-color: #25D366; color: white; padding: 10px; border-radius: 5px; text-align: center; margin-bottom: 8px; font-weight: bold; font-size: 0.9em;">🟢 WHATSAPP</div>
+        </a>
+        <a href="https://www.linkedin.com/company/formation-et-consulting-en-electricite-fcelec/" target="_blank" style="text-decoration: none;">
+            <div style="background-color: #0077B5; color: white; padding: 10px; border-radius: 5px; text-align: center; margin-bottom: 8px; font-weight: bold; font-size: 0.9em;">🔵 LINKEDIN</div>
+        </a>
+        <a href="https://www.facebook.com/profile.php?id=61586577760070" target="_blank" style="text-decoration: none;">
+            <div style="background-color: #1877F2; color: white; padding: 10px; border-radius: 5px; text-align: center; margin-bottom: 8px; font-weight: bold; font-size: 0.9em;">🔵 FACEBOOK</div>
+        </a>
+        <a href="https://www.youtube.com/@FCELECACADEMY" target="_blank" style="text-decoration: none;">
+            <div style="background-color: #FF0000; color: white; padding: 10px; border-radius: 5px; text-align: center; margin-bottom: 8px; font-weight: bold; font-size: 0.9em;">🔴 YOUTUBE</div>
+        </a>
+    """, unsafe_allow_html=True)
+
+    st.sidebar.markdown("---")
 
     # ---------------------------------------------------------
     # MODULE 1 : CARNET DE CÂBLES
@@ -196,8 +224,9 @@ if check_password():
                 pdf.set_font("Helvetica", "B", 8)
                 pdf.set_fill_color(200, 200, 200)
                 
+                # CORRECTION : Rééquilibrage total des largeurs pour que le Type de Câble ait de la place
                 headers = ["Tab.", "Repere", "Type Cable", "U", "L(m)", "Ib(A)", "Disj.", "Section", "dU(%)"]
-                widths = [18, 22, 28, 10, 12, 15, 15, 52, 18] # Somme exacte = 190
+                widths = [18, 25, 35, 10, 12, 15, 15, 42, 18] # Somme exacte = 190
                 
                 for i in range(len(headers)): 
                     pdf.cell(widths[i], 8, headers[i], 1, 0, 'C', True)
@@ -205,12 +234,12 @@ if check_password():
                 
                 pdf.set_font("Helvetica", "", 8)
                 for row in st.session_state.projet["cables"]:
-                    pdf.cell(widths[0], 8, sanitize_text(row.get("Tableau", "TGBT"), 10), 1)
-                    pdf.cell(widths[1], 8, sanitize_text(row["Repère"], 12), 1)
+                    pdf.cell(widths[0], 8, sanitize_text(row.get("Tableau", "TGBT"), 12), 1)
+                    pdf.cell(widths[1], 8, sanitize_text(row["Repère"], 18), 1)
                     
-                    # CORRECTION: Coupe intelligemment avant la parenthèse pour garder le nom technique
+                    # CORRECTION : Coupe propre du nom (garde "U1000 R2V / RO2V" entier par exemple)
                     raw_type = row.get("Type Câble", "U1000 R2V")
-                    clean_type = sanitize_text(raw_type.split(" (")[0], 15) 
+                    clean_type = sanitize_text(raw_type.split(" (")[0], 25) # On autorise 25 caractères sans couper
                     pdf.cell(widths[2], 8, clean_type, 1, 0, 'C')
                     
                     pdf.cell(widths[3], 8, str(row["Tension"])[0:3], 1, 0, 'C')
@@ -427,17 +456,45 @@ if check_password():
                 p_b = st.selectbox("Puissance", ["7.4 kW (32A Mono)", "22 kW (32A Tri)"])
                 st.info("Différentiel 30mA Type B. Câble : 10 mm² minimum.")
 
-    # --- SECTION PUBLICITAIRE FC ELEC ---
-    st.sidebar.markdown("---")
-    st.sidebar.markdown("### 🎓 Formations & Contact")
-    st.sidebar.info("Envie de maîtriser l'ingénierie électrique ? Découvrez nos formations professionnelles !")
-    st.sidebar.markdown("""
-    * 📱 **WhatsApp :** [+212 674-534264](https://wa.me/212674534264)
-    * 💼 **LinkedIn :** [FC ELEC - Formation & Consulting](https://www.linkedin.com/search/results/all/?keywords=FC%20ELEC)
-    * 📘 **Facebook :** [Fc elec officiel](https://www.facebook.com/search/top?q=Fc%20elec%20officiel)
-    * ▶️ **YouTube :** [@FCELECACADEMY](https://www.youtube.com/@FCELECACADEMY)
-    """)
-    st.sidebar.markdown("---")
+    # ---------------------------------------------------------
+    # PIED DE PAGE (FOOTER) - VISIBLE SUR TOUTES LES PAGES
+    # ---------------------------------------------------------
+    st.markdown("<br><br>", unsafe_allow_html=True)
+    st.markdown("---")
+    
+    foot1, foot2, foot3, foot4 = st.columns(4)
+    
+    with foot1:
+        st.markdown("#### 🎓 FC ELEC")
+        st.write("Formation & Consulting en Électricité")
+        st.write("Rabat, Maroc 🇲🇦")
+        
+    with foot2:
+        st.markdown("#### 📱 Contact")
+        st.write("WhatsApp : +212 674-534264")
+        st.write("Email : contact@fcelec.ma")
+        
+    with foot3:
+        st.markdown("#### 🌐 Réseaux")
+        st.markdown("[LinkedIn](https://www.linkedin.com/company/formation-et-consulting-en-electricite-fcelec/) | [YouTube](https://www.youtube.com/@FCELECACADEMY)")
+        st.markdown("[Facebook](https://www.facebook.com/profile.php?id=61586577760070)")
 
-    if st.sidebar.button("🔴 Déconnexion"):
-        st.session_state.clear(); st.rerun()
+    with foot4:
+        st.markdown("#### 🚀 Services")
+        st.write("Notes de calcul NF C 15-100")
+        st.write("Accompagnement de projets")
+
+    st.markdown(
+        """
+        <div style="background-color: #0e1117; padding: 10px; border-radius: 5px; text-align: center; border-top: 2px solid #FF4B4B; margin-top: 20px;">
+            <p style="color: white; font-size: 0.8em; margin: 0;">
+                © 2026 <b>FC ELEC EXPERT</b> | Application gratuite développée pour l'ingénierie électrique.
+            </p>
+        </div>
+        """, 
+        unsafe_allow_html=True
+    )
+
+    if st.sidebar.button("🔴 DÉCONNEXION", use_container_width=True):
+        st.session_state.clear()
+        st.rerun()
