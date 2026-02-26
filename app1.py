@@ -456,116 +456,129 @@ if check_password():
                 p_b = st.selectbox("Puissance", ["7.4 kW (32A Mono)", "22 kW (32A Tri)"])
                 st.info("Différentiel 30mA Type B. Câble : 10 mm² minimum.")
 
-   # ---------------------------------------------------------
-    # MODULE 5 : CATALOGUE DES FORMATIONS (MIS À JOUR AVEC PDF)
+  # ---------------------------------------------------------
+    # MODULE 5 : CATALOGUE DES FORMATIONS ET INSCRIPTION
     # ---------------------------------------------------------
     elif menu == "📚 5. Catalogue des Formations":
-        st.title("📚 Catalogue des Formations FC ELEC ACADEMY")
-        st.write("Transformez votre carrière avec nos formations 100% pratiques et certifiantes, dispensées par des experts du domaine.")
+        st.title("📚 FC ELEC ACADEMY : Formations & Inscription")
+        st.write("Transformez votre carrière avec nos formations 100% pratiques et certifiantes.")
         st.markdown("---")
 
-        # Fonction utilitaire pour lire vos fichiers PDF locaux
-        def charger_pdf(chemin_fichier):
-            try:
-                with open(chemin_fichier, "rb") as pdf_file:
-                    return pdf_file.read()
-            except FileNotFoundError:
-                # Retourne un fichier texte factice si le PDF n'est pas encore dans le dossier
-                return b"Le catalogue PDF est en cours de mise a jour par l'equipe FC ELEC."
+        # Création de deux onglets : Un pour le catalogue, un pour le formulaire
+        tab_catalogue, tab_inscription = st.tabs(["📖 Catalogue & PDF", "📝 Formulaire d'Inscription"])
 
-        # Ligne 1 des formations
-        col1, col2 = st.columns(2)
-        
-        with col1:
-            st.markdown("""
-            <div style="border: 1px solid #ddd; border-radius: 10px; padding: 20px; text-align: center; margin-bottom: 10px; box-shadow: 2px 2px 5px rgba(0,0,0,0.05); background-color: white;">
-                <h3 style="color: #0288d1;">⚡ Études Électriques & NF C 15-100</h3>
-                <p style="color: #555; font-size: 0.95em;">Maîtrisez les notes de calcul, le dimensionnement de câbles, les bilans de puissance et l'utilisation de logiciels professionnels (Caneco BT / AutoCAD).</p>
-                <p style="margin-bottom: 20px;"><b>Niveau :</b> Intermédiaire à Expert</p>
-                <a href="https://wa.me/212674534264?text=Bonjour,%20je%20souhaite%20avoir%20des%20informations%20sur%20la%20formation%20Études%20Électriques%20NF%20C%2015-100." target="_blank" style="background-color: #FF4B4B; color: white; padding: 10px 20px; border-radius: 5px; text-decoration: none; font-weight: bold;">👉 S'inscrire / Plus d'infos</a>
-            </div>
-            """, unsafe_allow_html=True)
-            
-            # Bouton de téléchargement du Plan de formation 1
-            pdf_etudes = charger_pdf("plan_formation_etudes_electriques.pdf")
-            st.download_button(
-                label="📄 Télécharger le Plan de Formation (PDF)",
-                data=pdf_etudes,
-                file_name="Plan_Formation_Etudes_Electriques_FCELEC.pdf",
-                mime="application/pdf",
-                use_container_width=True,
-                key="dl_etudes"
-            )
-            st.write("") # Espace visuel
+        # ==========================================
+        # ONGLET 1 : LE CATALOGUE ET LES PDF
+        # ==========================================
+        with tab_catalogue:
+            # Fonction utilitaire pour lire vos fichiers PDF locaux
+            def charger_pdf(chemin_fichier):
+                try:
+                    with open(chemin_fichier, "rb") as pdf_file:
+                        return pdf_file.read()
+                except FileNotFoundError:
+                    return b"Le catalogue PDF est en cours de mise a jour par l'equipe FC ELEC."
 
-        with col2:
-            st.markdown("""
-            <div style="border: 1px solid #ddd; border-radius: 10px; padding: 20px; text-align: center; margin-bottom: 10px; box-shadow: 2px 2px 5px rgba(0,0,0,0.05); background-color: white;">
-                <h3 style="color: #0288d1;">☀️ Solaire Photovoltaïque</h3>
-                <p style="color: #555; font-size: 0.95em;">Apprenez à dimensionner et concevoir des installations solaires autonomes et raccordées au réseau, avec le logiciel PVsyst.</p>
-                <p style="margin-bottom: 20px;"><b>Niveau :</b> Tous niveaux</p>
-                <a href="https://wa.me/212674534264?text=Bonjour,%20je%20souhaite%20avoir%20des%20informations%20sur%20la%20formation%20Solaire%20Photovoltaïque." target="_blank" style="background-color: #FF4B4B; color: white; padding: 10px 20px; border-radius: 5px; text-decoration: none; font-weight: bold;">👉 S'inscrire / Plus d'infos</a>
-            </div>
-            """, unsafe_allow_html=True)
+            col1, col2 = st.columns(2)
             
-            # Bouton de téléchargement du Plan de formation 2
-            pdf_solaire = charger_pdf("plan_formation_solaire.pdf")
-            st.download_button(
-                label="📄 Télécharger le Plan de Formation (PDF)",
-                data=pdf_solaire,
-                file_name="Plan_Formation_Solaire_FCELEC.pdf",
-                mime="application/pdf",
-                use_container_width=True,
-                key="dl_solaire"
-            )
-            st.write("")
+            with col1:
+                st.markdown("""
+                <div style="border: 1px solid #ddd; border-radius: 10px; padding: 20px; text-align: center; margin-bottom: 10px; box-shadow: 2px 2px 5px rgba(0,0,0,0.05); background-color: white;">
+                    <h3 style="color: #0288d1;">⚡ Études Électriques & NF C 15-100</h3>
+                    <p style="color: #555; font-size: 0.95em;">Maîtrisez les notes de calcul, le dimensionnement de câbles, et les logiciels (Caneco BT / AutoCAD).</p>
+                    <p style="margin-bottom: 20px;"><b>Niveau :</b> Intermédiaire à Expert</p>
+                </div>
+                """, unsafe_allow_html=True)
+                pdf_etudes = charger_pdf("plan_formation_etudes_electriques.pdf")
+                st.download_button("📄 Télécharger le Plan (PDF)", data=pdf_etudes, file_name="Plan_Etudes_Electriques_FCELEC.pdf", mime="application/pdf", use_container_width=True, key="dl_etudes")
+                st.write("") 
 
-        # Ligne 2 des formations
-        col3, col4 = st.columns(2)
-        
-        with col3:
-            st.markdown("""
-            <div style="border: 1px solid #ddd; border-radius: 10px; padding: 20px; text-align: center; margin-bottom: 10px; box-shadow: 2px 2px 5px rgba(0,0,0,0.05); background-color: white;">
-                <h3 style="color: #0288d1;">⚙️ Électricité Industrielle</h3>
-                <p style="color: #555; font-size: 0.95em;">Conception d'armoires électriques, schémas de commande et de puissance, variateurs de vitesse et introduction aux automates programmables.</p>
-                <p style="margin-bottom: 20px;"><b>Niveau :</b> Pratique & Terrain</p>
-                <a href="https://wa.me/212674534264?text=Bonjour,%20je%20souhaite%20avoir%20des%20informations%20sur%20la%20formation%20Électricité%20Industrielle." target="_blank" style="background-color: #FF4B4B; color: white; padding: 10px 20px; border-radius: 5px; text-decoration: none; font-weight: bold;">👉 S'inscrire / Plus d'infos</a>
-            </div>
-            """, unsafe_allow_html=True)
-            
-            # Bouton de téléchargement du Plan de formation 3
-            pdf_indus = charger_pdf("plan_formation_industrielle.pdf")
-            st.download_button(
-                label="📄 Télécharger le Plan de Formation (PDF)",
-                data=pdf_indus,
-                file_name="Plan_Formation_Indus_FCELEC.pdf",
-                mime="application/pdf",
-                use_container_width=True,
-                key="dl_indus"
-            )
+            with col2:
+                st.markdown("""
+                <div style="border: 1px solid #ddd; border-radius: 10px; padding: 20px; text-align: center; margin-bottom: 10px; box-shadow: 2px 2px 5px rgba(0,0,0,0.05); background-color: white;">
+                    <h3 style="color: #0288d1;">☀️ Solaire Photovoltaïque</h3>
+                    <p style="color: #555; font-size: 0.95em;">Apprenez à dimensionner et concevoir des installations solaires autonomes et raccordées (PVsyst).</p>
+                    <p style="margin-bottom: 20px;"><b>Niveau :</b> Tous niveaux</p>
+                </div>
+                """, unsafe_allow_html=True)
+                pdf_solaire = charger_pdf("plan_formation_solaire.pdf")
+                st.download_button("📄 Télécharger le Plan (PDF)", data=pdf_solaire, file_name="Plan_Solaire_FCELEC.pdf", mime="application/pdf", use_container_width=True, key="dl_solaire")
+                st.write("")
 
-        with col4:
-            st.markdown("""
-            <div style="border: 1px solid #ddd; border-radius: 10px; padding: 20px; text-align: center; margin-bottom: 10px; box-shadow: 2px 2px 5px rgba(0,0,0,0.05); background-color: white;">
-                <h3 style="color: #0288d1;">🚘 Bornes de Recharge (IRVE)</h3>
-                <p style="color: #555; font-size: 0.95em;">Le marché de l'avenir ! Apprenez les normes, le dimensionnement et les règles d'installation des Infrastructures de Recharge pour Véhicules Électriques.</p>
-                <p style="margin-bottom: 20px;"><b>Niveau :</b> Spécialisation</p>
-                <a href="https://wa.me/212674534264?text=Bonjour,%20je%20souhaite%20avoir%20des%20informations%20sur%20la%20formation%20IRVE%20(Bornes%20de%20recharge)." target="_blank" style="background-color: #FF4B4B; color: white; padding: 10px 20px; border-radius: 5px; text-decoration: none; font-weight: bold;">👉 S'inscrire / Plus d'infos</a>
-            </div>
-            """, unsafe_allow_html=True)
+            col3, col4 = st.columns(2)
             
-            # Bouton de téléchargement du Plan de formation 4
-            pdf_irve = charger_pdf("plan_formation_irve.pdf")
-            st.download_button(
-                label="📄 Télécharger le Plan de Formation (PDF)",
-                data=pdf_irve,
-                file_name="Plan_Formation_IRVE_FCELEC.pdf",
-                mime="application/pdf",
-                use_container_width=True,
-                key="dl_irve"
-            )
+            with col3:
+                st.markdown("""
+                <div style="border: 1px solid #ddd; border-radius: 10px; padding: 20px; text-align: center; margin-bottom: 10px; box-shadow: 2px 2px 5px rgba(0,0,0,0.05); background-color: white;">
+                    <h3 style="color: #0288d1;">⚙️ Électricité Industrielle</h3>
+                    <p style="color: #555; font-size: 0.95em;">Conception d'armoires, schémas de commande, variateurs de vitesse et automates programmables.</p>
+                    <p style="margin-bottom: 20px;"><b>Niveau :</b> Pratique & Terrain</p>
+                </div>
+                """, unsafe_allow_html=True)
+                pdf_indus = charger_pdf("plan_formation_industrielle.pdf")
+                st.download_button("📄 Télécharger le Plan (PDF)", data=pdf_indus, file_name="Plan_Indus_FCELEC.pdf", mime="application/pdf", use_container_width=True, key="dl_indus")
+
+            with col4:
+                st.markdown("""
+                <div style="border: 1px solid #ddd; border-radius: 10px; padding: 20px; text-align: center; margin-bottom: 10px; box-shadow: 2px 2px 5px rgba(0,0,0,0.05); background-color: white;">
+                    <h3 style="color: #0288d1;">🚘 Bornes de Recharge (IRVE)</h3>
+                    <p style="color: #555; font-size: 0.95em;">Normes, dimensionnement et règles d'installation des Infrastructures de Recharge (Véhicules Électriques).</p>
+                    <p style="margin-bottom: 20px;"><b>Niveau :</b> Spécialisation</p>
+                </div>
+                """, unsafe_allow_html=True)
+                pdf_irve = charger_pdf("plan_formation_irve.pdf")
+                st.download_button("📄 Télécharger le Plan (PDF)", data=pdf_irve, file_name="Plan_IRVE_FCELEC.pdf", mime="application/pdf", use_container_width=True, key="dl_irve")
+
+
+        # ==========================================
+        # ONGLET 2 : LE FORMULAIRE D'INSCRIPTION
+        # ==========================================
+        with tab_inscription:
+            st.markdown("### 🎓 Formulaire de Pré-inscription")
+            st.info("Remplissez ce formulaire pour réserver votre place. Un conseiller FC ELEC vous contactera sous 24h.")
             
-        st.info("💡 **Vous souhaitez une formation sur-mesure pour votre entreprise ?** Contactez-nous pour un devis personnalisé !")
+            # Création du formulaire avec Streamlit
+            with st.form("formulaire_inscription"):
+                col_f1, col_f2 = st.columns(2)
+                nom_client = col_f1.text_input("Nom & Prénom *")
+                tel_client = col_f2.text_input("Numéro de Téléphone / WhatsApp *")
+                
+                email_client = col_f1.text_input("Adresse Email")
+                profil_client = col_f2.selectbox("Votre profil", ["Étudiant", "Technicien", "Ingénieur", "Entreprise", "Autre"])
+                
+                formation_choisie = st.selectbox("Formation souhaitée *", [
+                    "Études Électriques & NF C 15-100",
+                    "Solaire Photovoltaïque",
+                    "Électricité Industrielle & Automatisme",
+                    "Bornes de Recharge (IRVE)",
+                    "Formation Sur-Mesure (Entreprise)"
+                ])
+                
+                message_client = st.text_area("Message ou besoins spécifiques (Optionnel)")
+                
+                # Bouton de soumission du formulaire
+                soumis = st.form_submit_button("🚀 Valider ma pré-inscription", type="primary")
+                
+                if soumis:
+                    if nom_client == "" or tel_client == "":
+                        st.error("⚠️ Veuillez remplir les champs obligatoires (Nom et Téléphone).")
+                    else:
+                        st.success(f"✅ Merci {nom_client} ! Votre demande pour la formation '{formation_choisie}' a bien été enregistrée.")
+                        
+                        # Génération du lien WhatsApp automatisé
+                        texte_wa = f"Bonjour FC ELEC, je suis {nom_client} ({profil_client}). Je souhaite m'inscrire à la formation : {formation_choisie}. Mon numéro est le {tel_client}."
+                        texte_wa_encode = texte_wa.replace(" ", "%20").replace("&", "%26")
+                        lien_wa = f"https://wa.me/212674534264?text={texte_wa_encode}"
+                        
+                        st.markdown(f"""
+                        <div style="background-color: #e8f5e9; padding: 15px; border-radius: 5px; text-align: center; border: 1px solid #4CAF50;">
+                            <h4 style="color: #2e7d32; margin-top:0;">Dernière étape !</h4>
+                            <p>Cliquez sur le bouton ci-dessous pour confirmer votre inscription directement sur notre WhatsApp officiel :</p>
+                            <a href="{lien_wa}" target="_blank" style="background-color: #25D366; color: white; padding: 10px 20px; border-radius: 5px; text-decoration: none; font-weight: bold; font-size: 1.1em;">
+                                💬 Envoyer ma confirmation sur WhatsApp
+                            </a>
+                        </div>
+                        """, unsafe_allow_html=True)
     # ---------------------------------------------------------
     # PIED DE PAGE (FOOTER) - VISIBLE SUR TOUTES LES PAGES
     # ---------------------------------------------------------
@@ -618,4 +631,5 @@ if check_password():
     if st.sidebar.button("🔴 DÉCONNEXION", use_container_width=True):
         st.session_state.clear()
         st.rerun()
+
 
