@@ -260,7 +260,8 @@ if check_password():
             if col_btn1.button("📄 Exporter Carnet (PDF)", type="primary"):
                 st.download_button("📥 Télécharger PDF", bytes(generate_pdf_cables()), f"Cables_{sanitize_text(st.session_state.projet['info']['nom'])}.pdf")
             if col_btn2.button("🗑️ Vider le Carnet"):
-                st.session_state.projet["cables"] = []; st.rerun()
+                st.session_state.projet["cables"] = []
+                st.rerun()
 
     # ---------------------------------------------------------
     # MODULE 2 : ARCHITECTURE MULTI-TABLEAUX
@@ -458,7 +459,7 @@ if check_password():
                 p_b = st.selectbox("Puissance", ["7.4 kW (32A Mono)", "22 kW (32A Tri)"])
                 st.info("Différentiel 30mA Type B. Câble : 10 mm² minimum.")
 
-# ---------------------------------------------------------
+    # ---------------------------------------------------------
     # MODULE 5 : CATALOGUE DES FORMATIONS ET INSCRIPTION + BASE DE DONNÉES
     # ---------------------------------------------------------
     elif menu == "📚 5. Catalogue des Formations":
@@ -523,7 +524,7 @@ if check_password():
                 """, unsafe_allow_html=True)
                 st.download_button("📄 Télécharger le Plan (PDF)", data=charger_pdf("plan_formation_irve.pdf"), file_name="Plan_IRVE.pdf", mime="application/pdf", use_container_width=True)
 
-    # ==========================================
+        # ==========================================
         # ONGLET 2 : LE FORMULAIRE D'INSCRIPTION ULTRA-ATTRACTIF
         # ==========================================
         with tab_inscription:
@@ -564,64 +565,65 @@ if check_password():
                 ])
                 
                 st.markdown("<small><i>* Champs obligatoires pour valider le dossier</i></small>", unsafe_allow_html=True)
-                st.markdown("<br>", unsafe_allow_html=True) # Espace
+                st.markdown("<br>", unsafe_allow_html=True)
                 
-                # BOUTON D'ACTION PRINCIPAL (CALL TO ACTION)
+                # BOUTON D'ACTION PRINCIPAL
                 soumis = st.form_submit_button("✅ JE RÉSERVE MA PLACE MAINTENANT", type="primary", use_container_width=True)
                 
-if soumis:
-                    if not nom_client or not email_client or not tel_client or not pays_client or sexe_client == "Sélectionner":
-                        st.error("⚠️ Oups ! Il manque quelques informations obligatoires pour finaliser votre réservation.")
-                    else:
-                        try:
-                            # --- 1. CONNEXION À GOOGLE SHEETS ---
-                            scopes = ["https://www.googleapis.com/auth/spreadsheets"]
-                            creds = Credentials.from_service_account_file("secrets.json", scopes=scopes)
-                            client = gspread.authorize(creds)
-                            
-                            # Ouverture du fichier Google Sheets (Le nom doit être exact)
-                            feuille = client.open("Base_Inscriptions_FCELEC").sheet1
-                            
-                            # --- 2. ENVOI DES DONNÉES ---
-                            nouvelle_ligne = [
-                                datetime.date.today().strftime("%d/%m/%Y"),
-                                nom_client,
-                                sexe_client,
-                                email_client,
-                                pays_client,
-                                tel_client,
-                                formation_choisie
-                            ]
-                            
-                            # Ajout de la ligne dans le tableau en temps réel !
-                            feuille.append_row(nouvelle_ligne)
+            # L'action if soumis est maintenant EN DEHORS du st.form, c'est mieux aligné
+            if soumis:
+                if not nom_client or not email_client or not tel_client or not pays_client or sexe_client == "Sélectionner":
+                    st.error("⚠️ Oups ! Il manque quelques informations obligatoires pour finaliser votre réservation.")
+                else:
+                    try:
+                        # --- 1. CONNEXION À GOOGLE SHEETS ---
+                        scopes = ["https://www.googleapis.com/auth/spreadsheets"]
+                        creds = Credentials.from_service_account_file("secrets.json", scopes=scopes)
+                        client = gspread.authorize(creds)
+                        
+                        # Ouverture du fichier Google Sheets (Le nom doit être exact)
+                        feuille = client.open("Base_Inscriptions_FCELEC").sheet1
+                        
+                        # --- 2. ENVOI DES DONNÉES ---
+                        nouvelle_ligne = [
+                            datetime.date.today().strftime("%d/%m/%Y"),
+                            nom_client,
+                            sexe_client,
+                            email_client,
+                            pays_client,
+                            tel_client,
+                            formation_choisie
+                        ]
+                        
+                        # Ajout de la ligne dans le tableau en temps réel !
+                        feuille.append_row(nouvelle_ligne)
 
-                            # --- 3. MESSAGE DE SUCCÈS ET WHATSAPP ---
-                            st.success(f"🎉 Excellent choix, {nom_client} ! Votre dossier est enregistré de manière sécurisée.")
-                            
-                            texte_wa = (f"Bonjour FC ELEC !%0AJe souhaite sécuriser ma place pour la prochaine session.%0A%0A"
-                                        f"📋 *Mon Dossier :*%0A- *Nom :* {nom_client}%0A- *Sexe :* {sexe_client}%0A"
-                                        f"- *Pays :* {pays_client}%0A- *E-mail :* {email_client}%0A- *WhatsApp :* {tel_client}%0A%0A"
-                                        f"🎓 *Formation choisie :* {formation_choisie}")
-                            
-                            lien_wa = f"https://wa.me/212674534264?text={texte_wa}"
-                            
-                            st.markdown(f"""
-                            <div style="background-color: #e8f5e9; padding: 25px; border-radius: 8px; text-align: center; border: 2px solid #4CAF50; margin-top: 15px;">
-                                <h3 style="color: #2e7d32; margin-top:0;">Dernière étape (Très important) ⏳</h3>
-                                <p style="font-size: 1.1em; color: #333;">Envoyez-nous votre confirmation sur WhatsApp en cliquant sur le bouton ci-dessous :</p>
-                                <a href="{lien_wa}" target="_blank" style="display: inline-block; background-color: #25D366; color: white; padding: 15px 30px; border-radius: 5px; text-decoration: none; font-weight: bold; font-size: 1.2em; box-shadow: 0 4px 6px rgba(0,0,0,0.2);">
-                                    💬 OUI, JE CONFIRME SUR WHATSAPP
-                                </a>
-                            </div>
-                            """, unsafe_allow_html=True)
-                            
-                        except Exception as e:
-                            st.error(f"Une erreur technique est survenue lors de l'enregistrement : {e}")
+                        # --- 3. MESSAGE DE SUCCÈS ET WHATSAPP ---
+                        st.success(f"🎉 Excellent choix, {nom_client} ! Votre dossier est enregistré de manière sécurisée.")
+                        
+                        texte_wa = (f"Bonjour FC ELEC !%0AJe souhaite sécuriser ma place pour la prochaine session.%0A%0A"
+                                    f"📋 *Mon Dossier :*%0A- *Nom :* {nom_client}%0A- *Sexe :* {sexe_client}%0A"
+                                    f"- *Pays :* {pays_client}%0A- *E-mail :* {email_client}%0A- *WhatsApp :* {tel_client}%0A%0A"
+                                    f"🎓 *Formation choisie :* {formation_choisie}")
+                        
+                        lien_wa = f"https://wa.me/212674534264?text={texte_wa}"
+                        
+                        st.markdown(f"""
+                        <div style="background-color: #e8f5e9; padding: 25px; border-radius: 8px; text-align: center; border: 2px solid #4CAF50; margin-top: 15px;">
+                            <h3 style="color: #2e7d32; margin-top:0;">Dernière étape (Très important) ⏳</h3>
+                            <p style="font-size: 1.1em; color: #333;">Envoyez-nous votre confirmation sur WhatsApp en cliquant sur le bouton ci-dessous :</p>
+                            <a href="{lien_wa}" target="_blank" style="display: inline-block; background-color: #25D366; color: white; padding: 15px 30px; border-radius: 5px; text-decoration: none; font-weight: bold; font-size: 1.2em; box-shadow: 0 4px 6px rgba(0,0,0,0.2);">
+                                💬 OUI, JE CONFIRME SUR WHATSAPP
+                            </a>
+                        </div>
+                        """, unsafe_allow_html=True)
+                        
+                    except Exception as e:
+                        st.error(f"Une erreur technique est survenue lors de l'enregistrement : {e}")
 
             # --- ESPACE ADMINISTRATEUR SÉCURISÉ ---
-    st.markdown("---")
-        with st.expander("🔐 Accès Administrateur FC ELEC"):
+            st.markdown("---")
+            with st.expander("🔐 Accès Administrateur FC ELEC"):
                 if "admin_connecte" not in st.session_state:
                     st.session_state.admin_connecte = False
 
@@ -661,6 +663,7 @@ if soumis:
                             mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
                             type="primary"
                         )
+
     # ---------------------------------------------------------
     # PIED DE PAGE (FOOTER) - VISIBLE SUR TOUTES LES PAGES
     # ---------------------------------------------------------
@@ -713,10 +716,3 @@ if soumis:
     if st.sidebar.button("🔴 DÉCONNEXION", use_container_width=True):
         st.session_state.clear()
         st.rerun()
-
-
-
-
-
-
-
