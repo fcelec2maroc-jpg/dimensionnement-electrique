@@ -581,32 +581,57 @@ if check_password():
                             </a>
                         </div>
                         """, unsafe_allow_html=True)
-
-            # --- ESPACE ADMINISTRATEUR CACHÉ ---
+# --- ESPACE ADMINISTRATEUR SÉCURISÉ ---
             st.markdown("---")
-            with st.expander("🔐 Espace Administrateur (Exportation des données)"):
-                st.info("Cette section vous permet de récupérer la liste de tous les inscrits.")
+            with st.expander("🔐 Accès Administrateur FC ELEC"):
+                # Initialisation de la variable de connexion
+                if "admin_connecte" not in st.session_state:
+                    st.session_state.admin_connecte = False
+
+                # 1. SI L'ADMIN N'EST PAS CONNECTÉ -> On affiche le champ mot de passe
+                if not st.session_state.admin_connecte:
+                    st.info("Cette section est réservée à la direction FC ELEC.")
+                    mot_de_passe = st.text_input("Mot de passe administrateur :", type="password")
+                    
+                    if st.button("Déverrouiller"):
+                        # REMPLACEZ 'FCELEC2026' PAR LE MOT DE PASSE DE VOTRE CHOIX
+                        if mot_de_passe == "FCELEC2026": 
+                            st.session_state.admin_connecte = True
+                            st.rerun() # Rafraîchit la page pour afficher le menu caché
+                        else:
+                            st.error("❌ Mot de passe incorrect.")
                 
-                if not st.session_state.base_inscriptions:
-                    st.warning("Aucune inscription pour le moment.")
-                else:
-                    # Affichage du tableau
-                    df_inscrits = pd.DataFrame(st.session_state.base_inscriptions)
-                    st.dataframe(df_inscrits, use_container_width=True)
+                # 2. SI L'ADMIN EST CONNECTÉ -> On affiche les données et le téléchargement
+                if st.session_state.admin_connecte:
+                    st.success("✅ Mode Administrateur activé.")
                     
-                    # Création du fichier Excel en mémoire
-                    output_excel = BytesIO()
-                    with pd.ExcelWriter(output_excel, engine='openpyxl') as writer:
-                        df_inscrits.to_excel(writer, index=False, sheet_name='Inscriptions_FCELEC')
+                    # Bouton pour se déconnecter et refermer le cadenas
+                    if st.button("🔒 Se déconnecter"):
+                        st.session_state.admin_connecte = False
+                        st.rerun()
+                        
+                    st.markdown("#### 📋 Base de données des inscrits")
                     
-                    # Bouton de téléchargement Excel
-                    st.download_button(
-                        label="📥 Télécharger la base de données (Excel)",
-                        data=output_excel.getvalue(),
-                        file_name=f"Inscriptions_FCELEC_{datetime.date.today().strftime('%d_%m_%Y')}.xlsx",
-                        mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
-                        type="primary"
-                    )
+                    if not st.session_state.base_inscriptions:
+                        st.warning("Aucune inscription pour le moment.")
+                    else:
+                        # Affichage du tableau
+                        df_inscrits = pd.DataFrame(st.session_state.base_inscriptions)
+                        st.dataframe(df_inscrits, use_container_width=True)
+                        
+                        # Création du fichier Excel en mémoire
+                        output_excel = BytesIO()
+                        with pd.ExcelWriter(output_excel, engine='openpyxl') as writer:
+                            df_inscrits.to_excel(writer, index=False, sheet_name='Inscriptions_FCELEC')
+                        
+                        # Bouton de téléchargement Excel
+                        st.download_button(
+                            label="📥 Télécharger la base de données (Excel)",
+                            data=output_excel.getvalue(),
+                            file_name=f"Inscriptions_FCELEC_{datetime.date.today().strftime('%d_%m_%Y')}.xlsx",
+                            mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+                            type="primary"
+                        )
     # ---------------------------------------------------------
     # PIED DE PAGE (FOOTER) - VISIBLE SUR TOUTES LES PAGES
     # ---------------------------------------------------------
