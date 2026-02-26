@@ -575,11 +575,13 @@ if check_password():
                 if not nom_client or not email_client or not tel_client or not pays_client or sexe_client == "Sélectionner":
                     st.error("⚠️ Oups ! Il manque quelques informations obligatoires pour finaliser votre réservation.")
                 else:
-                    try:
-                        # --- 1. CONNEXION À GOOGLE SHEETS ---
-                        scopes = ["https://www.googleapis.com/auth/spreadsheets"]
-                        creds = Credentials.from_service_account_file("secrets.json", scopes=scopes)
-                        client = gspread.authorize(creds)
+                        try:
+                            # --- 1. CONNEXION À GOOGLE SHEETS (SÉCURISÉE) ---
+                            scopes = ["https://www.googleapis.com/auth/spreadsheets"]
+                            import json
+                            creds_dict = json.loads(st.secrets["google_credentials"])
+                            creds = Credentials.from_service_account_info(creds_dict, scopes=scopes)
+                            client = gspread.authorize(creds)
                         
                         # Ouverture du fichier Google Sheets (Le nom doit être exact)
                         feuille = client.open("Base_Inscriptions_FCELEC").sheet1
@@ -716,3 +718,4 @@ if check_password():
     if st.sidebar.button("🔴 DÉCONNEXION", use_container_width=True):
         st.session_state.clear()
         st.rerun()
+
