@@ -11,9 +11,9 @@ st.set_page_config(page_title="FC ELEC - Ingénierie & Chiffrage", layout="wide"
 
 st.markdown("""
     <style>
-    .reportview-container { background: #f4f6f9; }
-    .stButton>button { border-radius: 5px; font-weight: bold; }
-    .footer-link { color: #FF4B4B; text-decoration: none; font-weight: bold; }
+    reportview-container { background: #f4f6f9; }
+    stButton>button { border-radius: 5px; font-weight: bold; }
+    footer-link { color: #FF4B4B; text-decoration: none; font-weight: bold; }
     </style>
 """, unsafe_allow_html=True)
 
@@ -697,6 +697,7 @@ if check_password():
     if st.sidebar.button("🔴 DÉCONNEXION", use_container_width=True):
         st.session_state.clear()
         st.rerun()
+
 
 
 
