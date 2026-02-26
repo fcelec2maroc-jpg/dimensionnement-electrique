@@ -5,6 +5,8 @@ import json
 import pandas as pd
 from io import BytesIO
 from fpdf import FPDF
+import gspread
+from google.oauth2.service_account import Credentials
 
 # --- CONFIGURATION DE LA PAGE ---
 st.set_page_config(page_title="FC ELEC - Ingénierie & Chiffrage", layout="wide", initial_sidebar_state="expanded")
@@ -567,41 +569,55 @@ if check_password():
                 # BOUTON D'ACTION PRINCIPAL (CALL TO ACTION)
                 soumis = st.form_submit_button("✅ JE RÉSERVE MA PLACE MAINTENANT", type="primary", use_container_width=True)
                 
-                if soumis:
+if soumis:
                     if not nom_client or not email_client or not tel_client or not pays_client or sexe_client == "Sélectionner":
                         st.error("⚠️ Oups ! Il manque quelques informations obligatoires pour finaliser votre réservation.")
                     else:
-                        # 1. SAUVEGARDE EN BASE DE DONNÉES
-                        nouvelle_inscription = {
-                            "Date": datetime.date.today().strftime("%d/%m/%Y"),
-                            "Nom et Prénom": nom_client,
-                            "Sexe": sexe_client,
-                            "E-mail": email_client,
-                            "Pays": pays_client,
-                            "WhatsApp": tel_client,
-                            "Formation Demandée": formation_choisie
-                        }
-                        st.session_state.base_inscriptions.append(nouvelle_inscription)
+                        try:
+                            # --- 1. CONNEXION À GOOGLE SHEETS ---
+                            scopes = ["https://www.googleapis.com/auth/spreadsheets"]
+                            creds = Credentials.from_service_account_file("secrets.json", scopes=scopes)
+                            client = gspread.authorize(creds)
+                            
+                            # Ouverture du fichier Google Sheets (Le nom doit être exact)
+                            feuille = client.open("Base_Inscriptions_FCELEC").sheet1
+                            
+                            # --- 2. ENVOI DES DONNÉES ---
+                            nouvelle_ligne = [
+                                datetime.date.today().strftime("%d/%m/%Y"),
+                                nom_client,
+                                sexe_client,
+                                email_client,
+                                pays_client,
+                                tel_client,
+                                formation_choisie
+                            ]
+                            
+                            # Ajout de la ligne dans le tableau en temps réel !
+                            feuille.append_row(nouvelle_ligne)
 
-                        # 2. MESSAGE DE SUCCÈS
-                        st.success(f"🎉 Excellent choix, {nom_client} ! Votre dossier de pré-inscription est créé.")
-                        
-                        texte_wa = (f"Bonjour FC ELEC !%0AJe souhaite sécuriser ma place pour la prochaine session.%0A%0A"
-                                    f"📋 *Mon Dossier :*%0A- *Nom :* {nom_client}%0A- *Sexe :* {sexe_client}%0A"
-                                    f"- *Pays :* {pays_client}%0A- *E-mail :* {email_client}%0A- *WhatsApp :* {tel_client}%0A%0A"
-                                    f"🎓 *Formation choisie :* {formation_choisie}")
-                        
-                        lien_wa = f"https://wa.me/212674534264?text={texte_wa}"
-                        
-                        st.markdown(f"""
-                        <div style="background-color: #e8f5e9; padding: 25px; border-radius: 8px; text-align: center; border: 2px solid #4CAF50; margin-top: 15px;">
-                            <h3 style="color: #2e7d32; margin-top:0;">Dernière étape (Très important) ⏳</h3>
-                            <p style="font-size: 1.1em; color: #333;">Pour valider définitivement votre place, envoyez-nous votre confirmation sur WhatsApp en cliquant sur le bouton ci-dessous :</p>
-                            <a href="{lien_wa}" target="_blank" style="display: inline-block; background-color: #25D366; color: white; padding: 15px 30px; border-radius: 5px; text-decoration: none; font-weight: bold; font-size: 1.2em; box-shadow: 0 4px 6px rgba(0,0,0,0.2); transition: 0.3s;">
-                                💬 OUI, JE CONFIRME SUR WHATSAPP
-                            </a>
-                        </div>
-                        """, unsafe_allow_html=True)
+                            # --- 3. MESSAGE DE SUCCÈS ET WHATSAPP ---
+                            st.success(f"🎉 Excellent choix, {nom_client} ! Votre dossier est enregistré de manière sécurisée.")
+                            
+                            texte_wa = (f"Bonjour FC ELEC !%0AJe souhaite sécuriser ma place pour la prochaine session.%0A%0A"
+                                        f"📋 *Mon Dossier :*%0A- *Nom :* {nom_client}%0A- *Sexe :* {sexe_client}%0A"
+                                        f"- *Pays :* {pays_client}%0A- *E-mail :* {email_client}%0A- *WhatsApp :* {tel_client}%0A%0A"
+                                        f"🎓 *Formation choisie :* {formation_choisie}")
+                            
+                            lien_wa = f"https://wa.me/212674534264?text={texte_wa}"
+                            
+                            st.markdown(f"""
+                            <div style="background-color: #e8f5e9; padding: 25px; border-radius: 8px; text-align: center; border: 2px solid #4CAF50; margin-top: 15px;">
+                                <h3 style="color: #2e7d32; margin-top:0;">Dernière étape (Très important) ⏳</h3>
+                                <p style="font-size: 1.1em; color: #333;">Envoyez-nous votre confirmation sur WhatsApp en cliquant sur le bouton ci-dessous :</p>
+                                <a href="{lien_wa}" target="_blank" style="display: inline-block; background-color: #25D366; color: white; padding: 15px 30px; border-radius: 5px; text-decoration: none; font-weight: bold; font-size: 1.2em; box-shadow: 0 4px 6px rgba(0,0,0,0.2);">
+                                    💬 OUI, JE CONFIRME SUR WHATSAPP
+                                </a>
+                            </div>
+                            """, unsafe_allow_html=True)
+                            
+                        except Exception as e:
+                            st.error(f"Une erreur technique est survenue lors de l'enregistrement : {e}")
 
             # --- ESPACE ADMINISTRATEUR SÉCURISÉ ---
             st.markdown("---")
@@ -697,6 +713,7 @@ if check_password():
     if st.sidebar.button("🔴 DÉCONNEXION", use_container_width=True):
         st.session_state.clear()
         st.rerun()
+
 
 
 
