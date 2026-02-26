@@ -456,22 +456,24 @@ if check_password():
                 p_b = st.selectbox("Puissance", ["7.4 kW (32A Mono)", "22 kW (32A Tri)"])
                 st.info("Différentiel 30mA Type B. Câble : 10 mm² minimum.")
 
-  # ---------------------------------------------------------
-    # MODULE 5 : CATALOGUE DES FORMATIONS ET INSCRIPTION
+# ---------------------------------------------------------
+    # MODULE 5 : CATALOGUE DES FORMATIONS ET INSCRIPTION + BASE DE DONNÉES
     # ---------------------------------------------------------
     elif menu == "📚 5. Catalogue des Formations":
         st.title("📚 FC ELEC ACADEMY : Formations & Inscription")
         st.write("Transformez votre carrière avec nos formations 100% pratiques et certifiantes.")
         st.markdown("---")
 
-        # Création de deux onglets : Un pour le catalogue, un pour le formulaire
+        # Initialisation de la base de données des inscriptions dans la mémoire
+        if "base_inscriptions" not in st.session_state:
+            st.session_state.base_inscriptions = []
+
         tab_catalogue, tab_inscription = st.tabs(["📖 Catalogue & PDF", "📝 Formulaire d'Inscription"])
 
         # ==========================================
         # ONGLET 1 : LE CATALOGUE ET LES PDF
         # ==========================================
         with tab_catalogue:
-            # Fonction utilitaire pour lire vos fichiers PDF locaux
             def charger_pdf(chemin_fichier):
                 try:
                     with open(chemin_fichier, "rb") as pdf_file:
@@ -480,105 +482,131 @@ if check_password():
                     return b"Le catalogue PDF est en cours de mise a jour par l'equipe FC ELEC."
 
             col1, col2 = st.columns(2)
-            
             with col1:
                 st.markdown("""
-                <div style="border: 1px solid #ddd; border-radius: 10px; padding: 20px; text-align: center; margin-bottom: 10px; box-shadow: 2px 2px 5px rgba(0,0,0,0.05); background-color: white;">
+                <div style="border: 1px solid #ddd; border-radius: 10px; padding: 20px; text-align: center; margin-bottom: 10px;">
                     <h3 style="color: #0288d1;">⚡ Études Électriques & NF C 15-100</h3>
-                    <p style="color: #555; font-size: 0.95em;">Maîtrisez les notes de calcul, le dimensionnement de câbles, et les logiciels (Caneco BT / AutoCAD).</p>
-                    <p style="margin-bottom: 20px;"><b>Niveau :</b> Intermédiaire à Expert</p>
+                    <p>Maîtrisez les notes de calcul, le dimensionnement de câbles, et les logiciels (Caneco BT / AutoCAD).</p>
                 </div>
                 """, unsafe_allow_html=True)
-                pdf_etudes = charger_pdf("plan_formation_etudes_electriques.pdf")
-                st.download_button("📄 Télécharger le Plan (PDF)", data=pdf_etudes, file_name="Plan_Etudes_Electriques_FCELEC.pdf", mime="application/pdf", use_container_width=True, key="dl_etudes")
+                st.download_button("📄 Télécharger le Plan (PDF)", data=charger_pdf("plan_formation_etudes_electriques.pdf"), file_name="Plan_Etudes_Electriques.pdf", mime="application/pdf", use_container_width=True)
                 st.write("") 
 
             with col2:
                 st.markdown("""
-                <div style="border: 1px solid #ddd; border-radius: 10px; padding: 20px; text-align: center; margin-bottom: 10px; box-shadow: 2px 2px 5px rgba(0,0,0,0.05); background-color: white;">
+                <div style="border: 1px solid #ddd; border-radius: 10px; padding: 20px; text-align: center; margin-bottom: 10px;">
                     <h3 style="color: #0288d1;">☀️ Solaire Photovoltaïque</h3>
-                    <p style="color: #555; font-size: 0.95em;">Apprenez à dimensionner et concevoir des installations solaires autonomes et raccordées (PVsyst).</p>
-                    <p style="margin-bottom: 20px;"><b>Niveau :</b> Tous niveaux</p>
+                    <p>Apprenez à dimensionner et concevoir des installations solaires autonomes et raccordées (PVsyst).</p>
                 </div>
                 """, unsafe_allow_html=True)
-                pdf_solaire = charger_pdf("plan_formation_solaire.pdf")
-                st.download_button("📄 Télécharger le Plan (PDF)", data=pdf_solaire, file_name="Plan_Solaire_FCELEC.pdf", mime="application/pdf", use_container_width=True, key="dl_solaire")
+                st.download_button("📄 Télécharger le Plan (PDF)", data=charger_pdf("plan_formation_solaire.pdf"), file_name="Plan_Solaire.pdf", mime="application/pdf", use_container_width=True)
                 st.write("")
 
             col3, col4 = st.columns(2)
-            
             with col3:
                 st.markdown("""
-                <div style="border: 1px solid #ddd; border-radius: 10px; padding: 20px; text-align: center; margin-bottom: 10px; box-shadow: 2px 2px 5px rgba(0,0,0,0.05); background-color: white;">
+                <div style="border: 1px solid #ddd; border-radius: 10px; padding: 20px; text-align: center; margin-bottom: 10px;">
                     <h3 style="color: #0288d1;">⚙️ Électricité Industrielle</h3>
-                    <p style="color: #555; font-size: 0.95em;">Conception d'armoires, schémas de commande, variateurs de vitesse et automates programmables.</p>
-                    <p style="margin-bottom: 20px;"><b>Niveau :</b> Pratique & Terrain</p>
+                    <p>Conception d'armoires, schémas de commande, variateurs de vitesse et automates programmables.</p>
                 </div>
                 """, unsafe_allow_html=True)
-                pdf_indus = charger_pdf("plan_formation_industrielle.pdf")
-                st.download_button("📄 Télécharger le Plan (PDF)", data=pdf_indus, file_name="Plan_Indus_FCELEC.pdf", mime="application/pdf", use_container_width=True, key="dl_indus")
+                st.download_button("📄 Télécharger le Plan (PDF)", data=charger_pdf("plan_formation_industrielle.pdf"), file_name="Plan_Indus.pdf", mime="application/pdf", use_container_width=True)
 
             with col4:
                 st.markdown("""
-                <div style="border: 1px solid #ddd; border-radius: 10px; padding: 20px; text-align: center; margin-bottom: 10px; box-shadow: 2px 2px 5px rgba(0,0,0,0.05); background-color: white;">
+                <div style="border: 1px solid #ddd; border-radius: 10px; padding: 20px; text-align: center; margin-bottom: 10px;">
                     <h3 style="color: #0288d1;">🚘 Bornes de Recharge (IRVE)</h3>
-                    <p style="color: #555; font-size: 0.95em;">Normes, dimensionnement et règles d'installation des Infrastructures de Recharge (Véhicules Électriques).</p>
-                    <p style="margin-bottom: 20px;"><b>Niveau :</b> Spécialisation</p>
+                    <p>Normes, dimensionnement et règles d'installation des Infrastructures de Recharge (Véhicules Électriques).</p>
                 </div>
                 """, unsafe_allow_html=True)
-                pdf_irve = charger_pdf("plan_formation_irve.pdf")
-                st.download_button("📄 Télécharger le Plan (PDF)", data=pdf_irve, file_name="Plan_IRVE_FCELEC.pdf", mime="application/pdf", use_container_width=True, key="dl_irve")
-
+                st.download_button("📄 Télécharger le Plan (PDF)", data=charger_pdf("plan_formation_irve.pdf"), file_name="Plan_IRVE.pdf", mime="application/pdf", use_container_width=True)
 
         # ==========================================
-        # ONGLET 2 : LE FORMULAIRE D'INSCRIPTION
+        # ONGLET 2 : LE FORMULAIRE ET L'ESPACE ADMIN
         # ==========================================
         with tab_inscription:
-            st.markdown("### 🎓 Formulaire de Pré-inscription")
-            st.info("Remplissez ce formulaire pour réserver votre place. Un conseiller FC ELEC vous contactera sous 24h.")
+            st.markdown("### 🎓 Formulaire Officiel d'Inscription")
             
-            # Création du formulaire avec Streamlit
             with st.form("formulaire_inscription"):
                 col_f1, col_f2 = st.columns(2)
-                nom_client = col_f1.text_input("Nom & Prénom *")
-                tel_client = col_f2.text_input("Numéro de Téléphone / WhatsApp *")
                 
-                email_client = col_f1.text_input("Adresse Email")
-                profil_client = col_f2.selectbox("Votre profil", ["Étudiant", "Technicien", "Ingénieur", "Entreprise", "Autre"])
+                nom_client = col_f1.text_input("Nom et Prénom *")
+                sexe_client = col_f2.selectbox("Sexe *", ["Sélectionner", "Homme", "Femme"])
                 
-                formation_choisie = st.selectbox("Formation souhaitée *", [
-                    "Études Électriques & NF C 15-100",
-                    "Solaire Photovoltaïque",
-                    "Électricité Industrielle & Automatisme",
-                    "Bornes de Recharge (IRVE)",
+                email_client = col_f1.text_input("Adresse E-mail *", placeholder="exemple@email.com")
+                pays_client = col_f2.text_input("Pays *", placeholder="Ex: Maroc, France...")
+                
+                tel_client = st.text_input("Numéro WhatsApp *", placeholder="+212 6 XX XX XX XX")
+                
+                formation_choisie = st.selectbox("Sélectionnez la formation souhaitée *", [
+                    "Études Électriques & NF C 15-100", "Solaire Photovoltaïque",
+                    "Électricité Industrielle & Automatisme", "Bornes de Recharge (IRVE)",
                     "Formation Sur-Mesure (Entreprise)"
                 ])
                 
-                message_client = st.text_area("Message ou besoins spécifiques (Optionnel)")
-                
-                # Bouton de soumission du formulaire
-                soumis = st.form_submit_button("🚀 Valider ma pré-inscription", type="primary")
+                st.markdown("*Champs obligatoires")
+                soumis = st.form_submit_button("🚀 Valider mon inscription", type="primary")
                 
                 if soumis:
-                    if nom_client == "" or tel_client == "":
-                        st.error("⚠️ Veuillez remplir les champs obligatoires (Nom et Téléphone).")
+                    if not nom_client or not email_client or not tel_client or not pays_client or sexe_client == "Sélectionner":
+                        st.error("⚠️ Veuillez remplir tous les champs obligatoires avec l'astérisque (*).")
                     else:
-                        st.success(f"✅ Merci {nom_client} ! Votre demande pour la formation '{formation_choisie}' a bien été enregistrée.")
+                        # 1. SAUVEGARDE DANS LA BASE DE DONNÉES
+                        nouvelle_inscription = {
+                            "Date": datetime.date.today().strftime("%d/%m/%Y"),
+                            "Nom et Prénom": nom_client,
+                            "Sexe": sexe_client,
+                            "E-mail": email_client,
+                            "Pays": pays_client,
+                            "WhatsApp": tel_client,
+                            "Formation Demandée": formation_choisie
+                        }
+                        st.session_state.base_inscriptions.append(nouvelle_inscription)
+
+                        # 2. MESSAGE DE SUCCÈS ET LIEN WHATSAPP
+                        st.success(f"✅ Félicitations {nom_client} ! Votre demande a été enregistrée dans notre base de données.")
                         
-                        # Génération du lien WhatsApp automatisé
-                        texte_wa = f"Bonjour FC ELEC, je suis {nom_client} ({profil_client}). Je souhaite m'inscrire à la formation : {formation_choisie}. Mon numéro est le {tel_client}."
-                        texte_wa_encode = texte_wa.replace(" ", "%20").replace("&", "%26")
-                        lien_wa = f"https://wa.me/212674534264?text={texte_wa_encode}"
+                        texte_wa = (f"Bonjour FC ELEC !%0AJe souhaite m'inscrire.%0A%0A"
+                                    f"📋 *Mes coordonnées :*%0A- *Nom :* {nom_client}%0A- *Sexe :* {sexe_client}%0A"
+                                    f"- *Pays :* {pays_client}%0A- *E-mail :* {email_client}%0A- *WhatsApp :* {tel_client}%0A%0A"
+                                    f"🎓 *Formation :* {formation_choisie}")
+                        
+                        lien_wa = f"https://wa.me/212674534264?text={texte_wa}"
                         
                         st.markdown(f"""
-                        <div style="background-color: #e8f5e9; padding: 15px; border-radius: 5px; text-align: center; border: 1px solid #4CAF50;">
-                            <h4 style="color: #2e7d32; margin-top:0;">Dernière étape !</h4>
-                            <p>Cliquez sur le bouton ci-dessous pour confirmer votre inscription directement sur notre WhatsApp officiel :</p>
-                            <a href="{lien_wa}" target="_blank" style="background-color: #25D366; color: white; padding: 10px 20px; border-radius: 5px; text-decoration: none; font-weight: bold; font-size: 1.1em;">
-                                💬 Envoyer ma confirmation sur WhatsApp
+                        <div style="background-color: #e8f5e9; padding: 20px; border-radius: 8px; text-align: center; border: 2px solid #4CAF50; margin-top: 15px;">
+                            <h4 style="color: #2e7d32; margin-top:0;">Finalisez sur WhatsApp !</h4>
+                            <a href="{lien_wa}" target="_blank" style="display: inline-block; background-color: #25D366; color: white; padding: 12px 25px; border-radius: 5px; text-decoration: none; font-weight: bold; font-size: 1.2em;">
+                                💬 Confirmer mon inscription
                             </a>
                         </div>
                         """, unsafe_allow_html=True)
+
+            # --- ESPACE ADMINISTRATEUR CACHÉ ---
+            st.markdown("---")
+            with st.expander("🔐 Espace Administrateur (Exportation des données)"):
+                st.info("Cette section vous permet de récupérer la liste de tous les inscrits.")
+                
+                if not st.session_state.base_inscriptions:
+                    st.warning("Aucune inscription pour le moment.")
+                else:
+                    # Affichage du tableau
+                    df_inscrits = pd.DataFrame(st.session_state.base_inscriptions)
+                    st.dataframe(df_inscrits, use_container_width=True)
+                    
+                    # Création du fichier Excel en mémoire
+                    output_excel = BytesIO()
+                    with pd.ExcelWriter(output_excel, engine='openpyxl') as writer:
+                        df_inscrits.to_excel(writer, index=False, sheet_name='Inscriptions_FCELEC')
+                    
+                    # Bouton de téléchargement Excel
+                    st.download_button(
+                        label="📥 Télécharger la base de données (Excel)",
+                        data=output_excel.getvalue(),
+                        file_name=f"Inscriptions_FCELEC_{datetime.date.today().strftime('%d_%m_%Y')}.xlsx",
+                        mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+                        type="primary"
+                    )
     # ---------------------------------------------------------
     # PIED DE PAGE (FOOTER) - VISIBLE SUR TOUTES LES PAGES
     # ---------------------------------------------------------
@@ -631,5 +659,6 @@ if check_password():
     if st.sidebar.button("🔴 DÉCONNEXION", use_container_width=True):
         st.session_state.clear()
         st.rerun()
+
 
 
