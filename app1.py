@@ -5,6 +5,7 @@ import json
 import pandas as pd
 from io import BytesIO
 from fpdf import FPDF
+from streamlit_gsheets import GSheetsConnection
 
 # --- CONFIGURATION DE LA PAGE ---
 st.set_page_config(page_title="FC ELEC - Ingénierie & Chiffrage", layout="wide", initial_sidebar_state="expanded")
@@ -534,60 +535,32 @@ if check_password():
                 """, unsafe_allow_html=True)
                 st.download_button("📄 Télécharger le Plan (PDF)", data=charger_pdf("FORMATION EN ETUDE ET CONCEPTION DES RESEAUX DE TELECOMS.pdf"), file_name="Plan_Telecoms.pdf", mime="application/pdf", use_container_width=True, key="btn_tel")
 
-        # ==========================================
+# ==========================================
         # ONGLET 2 : LE FORMULAIRE D'INSCRIPTION ULTRA-ATTRACTIF
         # ==========================================
         with tab_inscription:
             
-            # --- EN-TÊTE ATTRACTIF (DESIGN PREMIUM) ---
-            st.markdown("""
-            <div style="background: linear-gradient(135deg, #01579b, #0288d1); padding: 30px; border-radius: 12px; text-align: center; color: white; margin-bottom: 25px; box-shadow: 0 8px 16px rgba(0,0,0,0.15);">
-                <h2 style="margin: 0; font-size: 2.2em; font-weight: 800; text-transform: uppercase; letter-spacing: 1px;">🚀 Propulsez Votre Carrière !</h2>
-                <p style="margin: 15px 0 0 0; font-size: 1.1em; opacity: 0.95;">
-                    Rejoignez l'élite de l'ingénierie électrique avec <b>FC ELEC ACADEMY</b>.<br>
-                    Formations 100% pratiques • Experts du terrain • Attestation reconnue
-                </p>
-            </div>
-            """, unsafe_allow_html=True)
+            # --- Création de la connexion Google Sheets ---
+            # Streamlit va chercher les identifiants dans vos "Secrets"
+            conn = st.connection("gsheets", type=GSheetsConnection)
             
-            st.info("🔥 **Attention : Nos sessions se remplissent vite !** Remplissez ce formulaire d'inscription rapide pour bloquer votre place. Un expert vous contactera sous 24h.")
+            # ... [Le code de votre formulaire (Design, inputs...)] ...
             
-            # --- LE FORMULAIRE ---
-            with st.form("formulaire_inscription"):
-                st.markdown("### 📋 Vos Coordonnées")
-                col_f1, col_f2 = st.columns(2)
-                
-                nom_client = col_f1.text_input("👤 Nom et Prénom *")
-                sexe_client = col_f2.selectbox("🚻 Sexe *", ["Sélectionner", "Homme", "Femme"])
-                
-                email_client = col_f1.text_input("📧 Adresse E-mail *", placeholder="exemple@email.com")
-                pays_client = col_f2.text_input("🌍 Pays de résidence *", placeholder="Ex: Maroc, France, Sénégal...")
-                
-                tel_client = st.text_input("📱 Numéro WhatsApp (avec indicatif) *", placeholder="+212 6 XX XX XX XX")
-                
-                st.markdown("### 🎯 Votre Projet")
-                # MISE A JOUR DES OPTIONS DU MENU DÉROULANT ICI
-                formation_choisie = st.selectbox("💡 Quelle formation va booster votre avenir ? *", [
-                    "⚡ Conception des Installations Électriques CFO (Caneco BT-HT)",
-                    "🏙️ Conception des Réseaux de Distribution HTA-BT-EP",
-                    "☀️ Étude et Conception des Systèmes Solaires Photovoltaïques",
-                    "💡 Éclairage Intérieur et Extérieur (DIALux EVO)",
-                    "📡 Étude et Conception des Réseaux de Télécommunications",
-                    "🏢 Formation Sur-Mesure (Entreprise)"
-                ])
-                
-                st.markdown("<small><i>* Champs obligatoires pour valider le dossier</i></small>", unsafe_allow_html=True)
-                st.markdown("<br>", unsafe_allow_html=True) # Espace
-                
-                # BOUTON D'ACTION PRINCIPAL (CALL TO ACTION)
                 soumis = st.form_submit_button("✅ JE RÉSERVE MA PLACE MAINTENANT", type="primary", use_container_width=True)
                 
                 if soumis:
                     if not nom_client or not email_client or not tel_client or not pays_client or sexe_client == "Sélectionner":
                         st.error("⚠️ Oups ! Il manque quelques informations obligatoires pour finaliser votre réservation.")
                     else:
-                        # 1. SAUVEGARDE EN BASE DE DONNÉES
-                        nouvelle_inscription = {
+                        # 1. LECTURE DE LA BASE DE DONNÉES GOOGLE SHEETS EXISTANTE
+                        try:
+                            df_existantes = conn.read(worksheet="Inscriptions", ttl=5)
+                        except:
+                            # Si le fichier est vide ou nouveau, on crée une structure vide
+                            df_existantes = pd.DataFrame(columns=["Date", "Nom et Prénom", "Sexe", "E-mail", "Pays", "WhatsApp", "Formation Demandée"])
+
+                        # 2. PRÉPARATION DE LA NOUVELLE INSCRIPTION
+                        nouvelle_inscription = pd.DataFrame([{
                             "Date": datetime.date.today().strftime("%d/%m/%Y"),
                             "Nom et Prénom": nom_client,
                             "Sexe": sexe_client,
@@ -595,12 +568,16 @@ if check_password():
                             "Pays": pays_client,
                             "WhatsApp": tel_client,
                             "Formation Demandée": formation_choisie
-                        }
-                        st.session_state.base_inscriptions.append(nouvelle_inscription)
+                        }])
 
-                        # 2. MESSAGE DE SUCCÈS
-                        st.success(f"🎉 Excellent choix, {nom_client} ! Votre dossier de pré-inscription est créé.")
+                        # 3. SAUVEGARDE DANS GOOGLE SHEETS (PERMANENT)
+                        df_mise_a_jour = pd.concat([df_existantes, nouvelle_inscription], ignore_index=True)
+                        conn.update(worksheet="Inscriptions", data=df_mise_a_jour)
+
+                        # MESSAGE DE SUCCÈS
+                        st.success(f"🎉 Excellent choix, {nom_client} ! Votre dossier de pré-inscription est sécurisé.")
                         
+                        # ... [Le code de votre bouton WhatsApp reste identique] ...
                         texte_wa = (f"Bonjour FC ELEC !%0AJe souhaite sécuriser ma place pour la prochaine session.%0A%0A"
                                     f"📋 *Mon Dossier :*%0A- *Nom :* {nom_client}%0A- *Sexe :* {sexe_client}%0A"
                                     f"- *Pays :* {pays_client}%0A- *E-mail :* {email_client}%0A- *WhatsApp :* {tel_client}%0A%0A"
@@ -637,30 +614,32 @@ if check_password():
                 
                 if st.session_state.admin_connecte:
                     st.success("✅ Connexion réussie.")
-                    if st.button("🔒 Verrouiller la session"):
-                        st.session_state.admin_connecte = False
-                        st.rerun()
-                        
-                    st.markdown("#### 📊 Tableau de bord des inscriptions")
                     
-                    if not st.session_state.base_inscriptions:
-                        st.warning("Aucun prospect enregistré pour le moment.")
-                    else:
-                        df_inscrits = pd.DataFrame(st.session_state.base_inscriptions)
-                        st.dataframe(df_inscrits, use_container_width=True)
+                    st.markdown("#### 📊 Tableau de bord global des inscriptions")
+                    
+                    # L'admin télécharge les données fraîches depuis Google Sheets
+                    try:
+                        df_inscrits = conn.read(worksheet="Inscriptions", ttl=5)
                         
-                        output_excel = BytesIO()
-                        with pd.ExcelWriter(output_excel, engine='openpyxl') as writer:
-                            df_inscrits.to_excel(writer, index=False, sheet_name='Inscriptions')
-                        
-                        st.download_button(
-                            label="📥 TÉLÉCHARGER LE FICHIER EXCEL CLIENTS",
-                            data=output_excel.getvalue(),
-                            file_name=f"Base_Clients_FCELEC_{datetime.date.today().strftime('%d_%m_%Y')}.xlsx",
-                            mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
-                            type="primary"
-                        )
-    # ---------------------------------------------------------                        
+                        if df_inscrits.empty:
+                            st.warning("Aucun prospect enregistré pour le moment.")
+                        else:
+                            st.dataframe(df_inscrits, use_container_width=True)
+                            
+                            # Export Excel
+                            output_excel = BytesIO()
+                            with pd.ExcelWriter(output_excel, engine='openpyxl') as writer:
+                                df_inscrits.to_excel(writer, index=False, sheet_name='Inscriptions')
+                            
+                            st.download_button(
+                                label="📥 TÉLÉCHARGER LA BASE CLIENTS (EXCEL)",
+                                data=output_excel.getvalue(),
+                                file_name=f"Base_Clients_Global_{datetime.date.today().strftime('%d_%m_%Y')}.xlsx",
+                                mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+                                type="primary"
+                            )
+                    except Exception as e:
+                        st.error("Impossible de lire la base de données. Vérifiez la connexion Google Sheets.")                      
     # PIED DE PAGE (FOOTER) - VISIBLE SUR TOUTES LES PAGES
     # ---------------------------------------------------------
     st.markdown("<br><br>", unsafe_allow_html=True)
@@ -712,6 +691,7 @@ if check_password():
     if st.sidebar.button("🔴 DÉCONNEXION", use_container_width=True):
         st.session_state.clear()
         st.rerun()
+
 
 
 
