@@ -22,8 +22,8 @@ st.markdown("""
 if 'projet' not in st.session_state:
     st.session_state.projet = {
         "info": {"nom": "Chantier Résidentiel"},
-        "cables": [],          
-        "tableaux": {},        
+        "cables": [],
+        "tableaux": {},
         "ks_global": 0.8
     }
 
@@ -117,7 +117,6 @@ if check_password():
     st.sidebar.markdown("---")
     st.sidebar.markdown("<h3 style='text-align: center; color: #FF4B4B;'>🎓 FORMATIONS EXPERT</h3>", unsafe_allow_html=True)
     
-    # Encart Premium pour la formation
     st.sidebar.markdown("""
         <div style="background: linear-gradient(135deg, #01579b, #0288d1); padding: 15px; border-radius: 10px; margin-bottom: 15px; text-align: center; box-shadow: 0 4px 6px rgba(0,0,0,0.1);">
             <p style="color: white; font-weight: bold; margin-bottom: 5px; font-size: 1.1em;">🚀 Boostez votre carrière !</p>
@@ -139,7 +138,6 @@ if check_password():
             <div style="background-color: #FF0000; color: white; padding: 10px; border-radius: 5px; text-align: center; margin-bottom: 8px; font-weight: bold; font-size: 0.9em;">🔴 YOUTUBE</div>
         </a>
     """, unsafe_allow_html=True)
-
     st.sidebar.markdown("---")
 
     # ---------------------------------------------------------
@@ -457,7 +455,7 @@ if check_password():
                 p_b = st.selectbox("Puissance", ["7.4 kW (32A Mono)", "22 kW (32A Tri)"])
                 st.info("Différentiel 30mA Type B. Câble : 10 mm² minimum.")
 
-# ---------------------------------------------------------
+    # ---------------------------------------------------------
     # MODULE 5 : CATALOGUE DES FORMATIONS ET INSCRIPTION + BASE DE DONNÉES
     # ---------------------------------------------------------
     elif menu == "📚 5. Catalogue des Formations":
@@ -465,7 +463,6 @@ if check_password():
         st.write("Transformez votre carrière avec nos formations 100% pratiques et certifiantes basées sur des cas réels.")
         st.markdown("---")
 
-        # Initialisation de la base de données des inscriptions dans la mémoire
         if "base_inscriptions" not in st.session_state:
             st.session_state.base_inscriptions = []
 
@@ -482,7 +479,6 @@ if check_password():
                 except FileNotFoundError:
                     return b"Le catalogue PDF est en cours de mise a jour par l'equipe FC ELEC."
 
-            # --- LIGNE 1 : 3 FORMATIONS ---
             col1, col2, col3 = st.columns(3)
             
             with col1:
@@ -492,7 +488,7 @@ if check_password():
                     <p style="font-size:0.9em;">Caneco BT / HT. Conception basée sur l'expérience et les normes NFCs/UTEs.</p>
                 </div>
                 """, unsafe_allow_html=True)
-                st.download_button("📄 Télécharger le Plan (PDF)", data=charger_pdf("FORMATION EN CONCEPTION DES INSTALLATIONS ÉLECTRIQUES CFO CANECO BT-HT.pdf"), file_name="Plan_Installations_CFO_Caneco.pdf", mime="application/pdf", use_container_width=True, key="btn_cfo")
+                st.download_button("📄 Télécharger le Plan", data=charger_pdf("FORMATION EN CONCEPTION DES INSTALLATIONS ÉLECTRIQUES CFO CANECO BT-HT.pdf"), file_name="Plan_Installations_CFO_Caneco.pdf", mime="application/pdf", use_container_width=True, key="btn_cfo")
             
             with col2:
                 st.markdown("""
@@ -501,7 +497,7 @@ if check_password():
                     <p style="font-size:0.9em;">AutoCAD, Caneco HT, Caneco EP et DIALux. Conception de réseaux pour lotissements.</p>
                 </div>
                 """, unsafe_allow_html=True)
-                st.download_button("📄 Télécharger le Plan (PDF)", data=charger_pdf("FORMATION EN CONCEPTION DES RÉSEAUX DE DISTRIBUTION HT-BT-EP.pdf"), file_name="Plan_Reseaux_Distribution.pdf", mime="application/pdf", use_container_width=True, key="btn_res")
+                st.download_button("📄 Télécharger le Plan", data=charger_pdf("FORMATION EN CONCEPTION DES RÉSEAUX DE DISTRIBUTION HT-BT-EP.pdf"), file_name="Plan_Reseaux_Distribution.pdf", mime="application/pdf", use_container_width=True, key="btn_res")
 
             with col3:
                 st.markdown("""
@@ -510,12 +506,11 @@ if check_password():
                     <p style="font-size:0.9em;">Dimensionnement et modélisation sur PV SYST. Réseaux isolés, couplés et pompage.</p>
                 </div>
                 """, unsafe_allow_html=True)
-                st.download_button("📄 Télécharger le Plan (PDF)", data=charger_pdf("FORMATION EN ETUDE ET CONCEPTION DES SYSTEMES PHOTOVOLTAÏQUE.pdf"), file_name="Plan_Solaire_PV.pdf", mime="application/pdf", use_container_width=True, key="btn_pv")
+                st.download_button("📄 Télécharger le Plan", data=charger_pdf("FORMATION EN ETUDE ET CONCEPTION DES SYSTEMES PHOTOVOLTAÏQUE.pdf"), file_name="Plan_Solaire_PV.pdf", mime="application/pdf", use_container_width=True, key="btn_pv")
 
             st.write("")
             
-            # --- LIGNE 2 : 2 FORMATIONS ---
-            col4, col5, col6 = st.columns([1, 1, 1]) # Utilisation de 3 colonnes pour centrer ou répartir
+            col4, col5, col6 = st.columns([1, 1, 1])
 
             with col4:
                 st.markdown("""
@@ -524,7 +519,7 @@ if check_password():
                     <p style="font-size:0.9em;">Maîtrise de DIALux EVO. Étude photométrique selon normes NF EN 13-201 & 12464-1.</p>
                 </div>
                 """, unsafe_allow_html=True)
-                st.download_button("📄 Télécharger le Plan (PDF)", data=charger_pdf("FORMATION EN ECLAIRAGE INTERIEUR ET EXTERIEUR 2025.pdf"), file_name="Plan_Eclairage_Dialux.pdf", mime="application/pdf", use_container_width=True, key="btn_ecl")
+                st.download_button("📄 Télécharger le Plan", data=charger_pdf("FORMATION EN ECLAIRAGE INTERIEUR ET EXTERIEUR 2025.pdf"), file_name="Plan_Eclairage_Dialux.pdf", mime="application/pdf", use_container_width=True, key="btn_ecl")
 
             with col5:
                 st.markdown("""
@@ -533,33 +528,52 @@ if check_password():
                     <p style="font-size:0.9em;">Infrastructures génie civil, dimensionnement des câbles PTT 88 et Fibre Optique.</p>
                 </div>
                 """, unsafe_allow_html=True)
-                st.download_button("📄 Télécharger le Plan (PDF)", data=charger_pdf("FORMATION EN ETUDE ET CONCEPTION DES RESEAUX DE TELECOMS.pdf"), file_name="Plan_Telecoms.pdf", mime="application/pdf", use_container_width=True, key="btn_tel")
+                st.download_button("📄 Télécharger le Plan", data=charger_pdf("FORMATION EN ETUDE ET CONCEPTION DES RESEAUX DE TELECOMS.pdf"), file_name="Plan_Telecoms.pdf", mime="application/pdf", use_container_width=True, key="btn_tel")
 
-# ==========================================
+        # ==========================================
         # ONGLET 2 : LE FORMULAIRE D'INSCRIPTION ULTRA-ATTRACTIF
         # ==========================================
         with tab_inscription:
-            
-            # --- Création de la connexion Google Sheets ---
-            # Streamlit va chercher les identifiants dans vos "Secrets"
+            # --- Connexion Google Sheets ---
             conn = st.connection("gsheets", type=GSheetsConnection)
             
-            # ... [Le code de votre formulaire (Design, inputs...)] ...
-            
-            soumis = st.form_submit_button("✅ JE RÉSERVE MA PLACE MAINTENANT", type="primary", use_container_width=True)
+            with st.form("formulaire_inscription"):
+                st.markdown("### 📋 Vos Coordonnées")
+                col_f1, col_f2 = st.columns(2)
+                
+                nom_client = col_f1.text_input("👤 Nom et Prénom *")
+                sexe_client = col_f2.selectbox("🚻 Sexe *", ["Sélectionner", "Homme", "Femme"])
+                
+                email_client = col_f1.text_input("📧 Adresse E-mail *", placeholder="exemple@email.com")
+                pays_client = col_f2.text_input("🌍 Pays de résidence *", placeholder="Ex: Maroc, France, Sénégal...")
+                
+                tel_client = st.text_input("📱 Numéro WhatsApp (avec indicatif) *", placeholder="+212 6 XX XX XX XX")
+                
+                st.markdown("### 🎯 Votre Projet")
+                formation_choisie = st.selectbox("💡 Quelle formation va booster votre avenir ? *", [
+                    "⚡ Conception des Installations Électriques CFO (Caneco BT-HT)",
+                    "🏙️ Conception des Réseaux de Distribution HTA-BT-EP",
+                    "☀️ Étude et Conception des Systèmes Solaires Photovoltaïques",
+                    "💡 Éclairage Intérieur et Extérieur (DIALux EVO)",
+                    "📡 Étude et Conception des Réseaux de Télécommunications",
+                    "🏢 Formation Sur-Mesure (Entreprise)"
+                ])
+                
+                st.markdown("<small><i>* Champs obligatoires pour valider le dossier</i></small>", unsafe_allow_html=True)
+                st.markdown("<br>", unsafe_allow_html=True)
+                
+                # Le bouton soumis et le if soumis sont bien alignés à l'intérieur du form
+                soumis = st.form_submit_button("✅ JE RÉSERVE MA PLACE MAINTENANT", type="primary", use_container_width=True)
                 
                 if soumis:
                     if not nom_client or not email_client or not tel_client or not pays_client or sexe_client == "Sélectionner":
                         st.error("⚠️ Oups ! Il manque quelques informations obligatoires pour finaliser votre réservation.")
                     else:
-                        # 1. LECTURE DE LA BASE DE DONNÉES GOOGLE SHEETS EXISTANTE
                         try:
                             df_existantes = conn.read(worksheet="Inscriptions", ttl=5)
                         except:
-                            # Si le fichier est vide ou nouveau, on crée une structure vide
                             df_existantes = pd.DataFrame(columns=["Date", "Nom et Prénom", "Sexe", "E-mail", "Pays", "WhatsApp", "Formation Demandée"])
 
-                        # 2. PRÉPARATION DE LA NOUVELLE INSCRIPTION
                         nouvelle_inscription = pd.DataFrame([{
                             "Date": datetime.date.today().strftime("%d/%m/%Y"),
                             "Nom et Prénom": nom_client,
@@ -570,14 +584,11 @@ if check_password():
                             "Formation Demandée": formation_choisie
                         }])
 
-                        # 3. SAUVEGARDE DANS GOOGLE SHEETS (PERMANENT)
                         df_mise_a_jour = pd.concat([df_existantes, nouvelle_inscription], ignore_index=True)
                         conn.update(worksheet="Inscriptions", data=df_mise_a_jour)
 
-                        # MESSAGE DE SUCCÈS
                         st.success(f"🎉 Excellent choix, {nom_client} ! Votre dossier de pré-inscription est sécurisé.")
                         
-                        # ... [Le code de votre bouton WhatsApp reste identique] ...
                         texte_wa = (f"Bonjour FC ELEC !%0AJe souhaite sécuriser ma place pour la prochaine session.%0A%0A"
                                     f"📋 *Mon Dossier :*%0A- *Nom :* {nom_client}%0A- *Sexe :* {sexe_client}%0A"
                                     f"- *Pays :* {pays_client}%0A- *E-mail :* {email_client}%0A- *WhatsApp :* {tel_client}%0A%0A"
@@ -614,10 +625,12 @@ if check_password():
                 
                 if st.session_state.admin_connecte:
                     st.success("✅ Connexion réussie.")
-                    
+                    if st.button("🔒 Verrouiller la session"):
+                        st.session_state.admin_connecte = False
+                        st.rerun()
+
                     st.markdown("#### 📊 Tableau de bord global des inscriptions")
                     
-                    # L'admin télécharge les données fraîches depuis Google Sheets
                     try:
                         df_inscrits = conn.read(worksheet="Inscriptions", ttl=5)
                         
@@ -626,7 +639,6 @@ if check_password():
                         else:
                             st.dataframe(df_inscrits, use_container_width=True)
                             
-                            # Export Excel
                             output_excel = BytesIO()
                             with pd.ExcelWriter(output_excel, engine='openpyxl') as writer:
                                 df_inscrits.to_excel(writer, index=False, sheet_name='Inscriptions')
@@ -639,12 +651,13 @@ if check_password():
                                 type="primary"
                             )
                     except Exception as e:
-                        st.error("Impossible de lire la base de données. Vérifiez la connexion Google Sheets.")                      
+                        st.error("Impossible de lire la base de données. Vérifiez la connexion Google Sheets.")
+
+    # ---------------------------------------------------------
     # PIED DE PAGE (FOOTER) - VISIBLE SUR TOUTES LES PAGES
     # ---------------------------------------------------------
     st.markdown("<br><br>", unsafe_allow_html=True)
     
-    # Bannièree Premium d'appel à l'action pour les formations
     st.markdown("""
     <div style="background-color: #e3f2fd; padding: 25px; border-radius: 10px; text-align: center; border-left: 6px solid #0288d1; margin-bottom: 30px; box-shadow: 0 4px 6px rgba(0,0,0,0.05);">
         <h3 style="color: #01579b; margin-top: 0; font-size: 1.4em;">🎓 Prêt à maîtriser l'ingénierie électrique ?</h3>
@@ -691,9 +704,3 @@ if check_password():
     if st.sidebar.button("🔴 DÉCONNEXION", use_container_width=True):
         st.session_state.clear()
         st.rerun()
-
-
-
-
-
-
