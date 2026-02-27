@@ -69,6 +69,14 @@ class FCELEC_Report(FPDF):
     def header(self):
         try: self.image("logoFCELEC.png", 10, 8, 25)
         except: pass
+        
+        # ⬇️ AJOUT DE LA LIGNE VERTICALE BLEUE A COTÉ DU LOGO ⬇️
+        self.set_draw_color(2, 136, 209) # Bleu FC ELEC
+        self.set_line_width(0.6)
+        self.line(38, 8, 38, 23)
+        self.set_line_width(0.2)
+        self.set_draw_color(0, 0, 0) # Retour au noir pour le texte
+        
         self.set_font("Helvetica", "B", 14)
         self.cell(30)
         self.cell(130, 8, "DOSSIER TECHNIQUE ELECTRIQUE", border=0, ln=0, align="C")
@@ -77,15 +85,18 @@ class FCELEC_Report(FPDF):
         self.set_font("Helvetica", "I", 9)
         self.cell(30)
         self.cell(130, 5, "Note de calcul conforme a la norme NF C 15-100", border=0, ln=1, align="C")
-        self.line(10, 25, 200, 25)
-        self.ln(10)
+        
+        # Ligne horizontale en bleu
+        self.set_draw_color(2, 136, 209)
+        self.line(10, 26, 200, 26)
+        self.set_draw_color(0, 0, 0)
+        self.ln(12)
 
     def footer(self):
         self.set_y(-15)
         self.set_font("Helvetica", "I", 8)
         self.set_text_color(128, 128, 128)
         self.line(10, 282, 200, 282)
-        # ⬇️ MODIFICATION DU PIED DE PAGE PDF ICI ⬇️
         self.cell(0, 5, f"FC ELEC - formation et consulting | WhatsApp : +212 6 74 53 42 64 | Page {self.page_no()}", 0, 0, "C")
 
 # --- SÉCURITÉ ---
@@ -129,7 +140,6 @@ if check_password():
 
     st.sidebar.markdown("---")
     
-    # ⬇️ ORDRE DU MENU MODIFIÉ ICI ⬇️
     menu = st.sidebar.radio("Navigation :", [
         "📚 1. Catalogue des Formations",
         "🔌 2. Carnet de Câbles",
@@ -479,8 +489,9 @@ if check_password():
                 pdf.set_fill_color(230, 230, 230)
                 pdf.set_text_color(0, 0, 0)
                 
-                headers = ["Tab.", "Repere", "Type Cable", "L(m)", "Ib(A)", "In(A)", "Iz(A)", "Section + Pose", "dU(%)"]
-                widths = [15, 25, 25, 12, 15, 15, 15, 50, 18]
+                # ⬇️ REDIMENSIONNEMENT DES COLONNES DU PDF ET SUPPRESSION DE LA POSE ⬇️
+                headers = ["Tab.", "Repere", "Type Cable", "L(m)", "Ib(A)", "In(A)", "Iz(A)", "Section", "dU(%)"]
+                widths = [14, 26, 40, 12, 15, 15, 15, 35, 18] # Total exact = 190
                 
                 for i in range(len(headers)): 
                     pdf.cell(widths[i], 8, headers[i], 1, 0, 'C', True)
@@ -503,7 +514,8 @@ if check_password():
                     pdf.cell(widths[6], 8, f"{row.get('Iz(A)', '-')}A", 1, 0, 'C')
                     
                     pdf.set_text_color(255, 100, 0)
-                    pdf.cell(widths[7], 8, f"{row['Section(mm2)']} mm2 ({row.get('Pose', 'B')})", 1, 0, 'C')
+                    # La méthode de pose a été supprimée, seul le texte de la section apparait
+                    pdf.cell(widths[7], 8, f"{row['Section(mm2)']} mm2", 1, 0, 'C')
                     
                     pdf.set_text_color(0, 0, 0)
                     pdf.set_font("Helvetica", "", 8)
