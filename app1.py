@@ -461,7 +461,7 @@ if check_password():
     # ---------------------------------------------------------
     elif menu == "📚 5. Catalogue des Formations":
         st.title("📚 FC ELEC ACADEMY : Formations & Inscription")
-        st.write("Transformez votre carrière avec nos formations 100% pratiques et certifiantes.")
+        st.write("Transformez votre carrière avec nos formations 100% pratiques et certifiantes basées sur des cas réels.")
         st.markdown("---")
 
         # Initialisation de la base de données des inscriptions dans la mémoire
@@ -481,47 +481,60 @@ if check_password():
                 except FileNotFoundError:
                     return b"Le catalogue PDF est en cours de mise a jour par l'equipe FC ELEC."
 
-            col1, col2 = st.columns(2)
+            # --- LIGNE 1 : 3 FORMATIONS ---
+            col1, col2, col3 = st.columns(3)
+            
             with col1:
                 st.markdown("""
-                <div style="border: 1px solid #ddd; border-radius: 10px; padding: 20px; text-align: center; margin-bottom: 10px;">
-                    <h3 style="color: #0288d1;">⚡ Études Électriques & NF C 15-100</h3>
-                    <p>Maîtrisez les notes de calcul, le dimensionnement de câbles, et les logiciels (Caneco BT / AutoCAD).</p>
+                <div style="border: 1px solid #ddd; border-radius: 10px; padding: 15px; text-align: center; margin-bottom: 10px; height: 200px;">
+                    <h4 style="color: #0288d1;">⚡ Installations Électriques CFO</h4>
+                    <p style="font-size:0.9em;">Caneco BT / HT. Conception basée sur l'expérience et les normes NFCs/UTEs.</p>
                 </div>
                 """, unsafe_allow_html=True)
-                st.download_button("📄 Télécharger le Plan (PDF)", data=charger_pdf("plan_formation_etudes_electriques.pdf"), file_name="Plan_Etudes_Electriques.pdf", mime="application/pdf", use_container_width=True)
-                st.write("") 
-
+                st.download_button("📄 Télécharger le Plan (PDF)", data=charger_pdf("FORMATION EN CONCEPTION DES INSTALLATIONS ÉLECTRIQUES CFO CANECO BT-HT.pdf"), file_name="Plan_Installations_CFO_Caneco.pdf", mime="application/pdf", use_container_width=True, key="btn_cfo")
+            
             with col2:
                 st.markdown("""
-                <div style="border: 1px solid #ddd; border-radius: 10px; padding: 20px; text-align: center; margin-bottom: 10px;">
-                    <h3 style="color: #0288d1;">☀️ Solaire Photovoltaïque</h3>
-                    <p>Apprenez à dimensionner et concevoir des installations solaires autonomes et raccordées (PVsyst).</p>
+                <div style="border: 1px solid #ddd; border-radius: 10px; padding: 15px; text-align: center; margin-bottom: 10px; height: 200px;">
+                    <h4 style="color: #0288d1;">🏙️ Réseaux Distribution HTA-BT-EP</h4>
+                    <p style="font-size:0.9em;">AutoCAD, Caneco HT, Caneco EP et DIALux. Conception de réseaux pour lotissements.</p>
                 </div>
                 """, unsafe_allow_html=True)
-                st.download_button("📄 Télécharger le Plan (PDF)", data=charger_pdf("plan_formation_solaire.pdf"), file_name="Plan_Solaire.pdf", mime="application/pdf", use_container_width=True)
-                st.write("")
+                st.download_button("📄 Télécharger le Plan (PDF)", data=charger_pdf("FORMATION EN CONCEPTION DES RÉSEAUX DE DISTRIBUTION HT-BT-EP.pdf"), file_name="Plan_Reseaux_Distribution.pdf", mime="application/pdf", use_container_width=True, key="btn_res")
 
-            col3, col4 = st.columns(2)
             with col3:
                 st.markdown("""
-                <div style="border: 1px solid #ddd; border-radius: 10px; padding: 20px; text-align: center; margin-bottom: 10px;">
-                    <h3 style="color: #0288d1;">⚙️ Électricité Industrielle</h3>
-                    <p>Conception d'armoires, schémas de commande, variateurs de vitesse et automates programmables.</p>
+                <div style="border: 1px solid #ddd; border-radius: 10px; padding: 15px; text-align: center; margin-bottom: 10px; height: 200px;">
+                    <h4 style="color: #0288d1;">☀️ Systèmes Solaires PV</h4>
+                    <p style="font-size:0.9em;">Dimensionnement et modélisation sur PV SYST. Réseaux isolés, couplés et pompage.</p>
                 </div>
                 """, unsafe_allow_html=True)
-                st.download_button("📄 Télécharger le Plan (PDF)", data=charger_pdf("plan_formation_industrielle.pdf"), file_name="Plan_Indus.pdf", mime="application/pdf", use_container_width=True)
+                st.download_button("📄 Télécharger le Plan (PDF)", data=charger_pdf("FORMATION EN ETUDE ET CONCEPTION DES SYSTEMES PHOTOVOLTAÏQUE.pdf"), file_name="Plan_Solaire_PV.pdf", mime="application/pdf", use_container_width=True, key="btn_pv")
+
+            st.write("")
+            
+            # --- LIGNE 2 : 2 FORMATIONS ---
+            col4, col5, col6 = st.columns([1, 1, 1]) # Utilisation de 3 colonnes pour centrer ou répartir
 
             with col4:
                 st.markdown("""
-                <div style="border: 1px solid #ddd; border-radius: 10px; padding: 20px; text-align: center; margin-bottom: 10px;">
-                    <h3 style="color: #0288d1;">🚘 Bornes de Recharge (IRVE)</h3>
-                    <p>Normes, dimensionnement et règles d'installation des Infrastructures de Recharge (Véhicules Électriques).</p>
+                <div style="border: 1px solid #ddd; border-radius: 10px; padding: 15px; text-align: center; margin-bottom: 10px; height: 200px;">
+                    <h4 style="color: #0288d1;">💡 Éclairage Int. & Extérieur</h4>
+                    <p style="font-size:0.9em;">Maîtrise de DIALux EVO. Étude photométrique selon normes NF EN 13-201 & 12464-1.</p>
                 </div>
                 """, unsafe_allow_html=True)
-                st.download_button("📄 Télécharger le Plan (PDF)", data=charger_pdf("plan_formation_irve.pdf"), file_name="Plan_IRVE.pdf", mime="application/pdf", use_container_width=True)
+                st.download_button("📄 Télécharger le Plan (PDF)", data=charger_pdf("FORMATION EN ECLAIRAGE INTERIEUR ET EXTERIEUR 2025.pdf"), file_name="Plan_Eclairage_Dialux.pdf", mime="application/pdf", use_container_width=True, key="btn_ecl")
 
-    # ==========================================
+            with col5:
+                st.markdown("""
+                <div style="border: 1px solid #ddd; border-radius: 10px; padding: 15px; text-align: center; margin-bottom: 10px; height: 200px;">
+                    <h4 style="color: #0288d1;">📡 Réseaux de Télécommunications</h4>
+                    <p style="font-size:0.9em;">Infrastructures génie civil, dimensionnement des câbles PTT 88 et Fibre Optique.</p>
+                </div>
+                """, unsafe_allow_html=True)
+                st.download_button("📄 Télécharger le Plan (PDF)", data=charger_pdf("FORMATION EN ETUDE ET CONCEPTION DES RESEAUX DE TELECOMS.pdf"), file_name="Plan_Telecoms.pdf", mime="application/pdf", use_container_width=True, key="btn_tel")
+
+        # ==========================================
         # ONGLET 2 : LE FORMULAIRE D'INSCRIPTION ULTRA-ATTRACTIF
         # ==========================================
         with tab_inscription:
@@ -553,11 +566,13 @@ if check_password():
                 tel_client = st.text_input("📱 Numéro WhatsApp (avec indicatif) *", placeholder="+212 6 XX XX XX XX")
                 
                 st.markdown("### 🎯 Votre Projet")
+                # MISE A JOUR DES OPTIONS DU MENU DÉROULANT ICI
                 formation_choisie = st.selectbox("💡 Quelle formation va booster votre avenir ? *", [
-                    "⚡ Études Électriques & NF C 15-100",
-                    "☀️ Solaire Photovoltaïque",
-                    "⚙️ Électricité Industrielle & Automatisme",
-                    "🚘 Bornes de Recharge (IRVE)",
+                    "⚡ Conception des Installations Électriques CFO (Caneco BT-HT)",
+                    "🏙️ Conception des Réseaux de Distribution HTA-BT-EP",
+                    "☀️ Étude et Conception des Systèmes Solaires Photovoltaïques",
+                    "💡 Éclairage Intérieur et Extérieur (DIALux EVO)",
+                    "📡 Étude et Conception des Réseaux de Télécommunications",
                     "🏢 Formation Sur-Mesure (Entreprise)"
                 ])
                 
@@ -645,7 +660,7 @@ if check_password():
                             mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
                             type="primary"
                         )
-    # ---------------------------------------------------------
+    # ---------------------------------------------------------                        
     # PIED DE PAGE (FOOTER) - VISIBLE SUR TOUTES LES PAGES
     # ---------------------------------------------------------
     st.markdown("<br><br>", unsafe_allow_html=True)
@@ -697,6 +712,7 @@ if check_password():
     if st.sidebar.button("🔴 DÉCONNEXION", use_container_width=True):
         st.session_state.clear()
         st.rerun()
+
 
 
 
