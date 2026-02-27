@@ -546,7 +546,7 @@ if check_password():
             
             # ... [Le code de votre formulaire (Design, inputs...)] ...
             
-                soumis = st.form_submit_button("✅ JE RÉSERVE MA PLACE MAINTENANT", type="primary", use_container_width=True)
+            soumis = st.form_submit_button("✅ JE RÉSERVE MA PLACE MAINTENANT", type="primary", use_container_width=True)
                 
                 if soumis:
                     if not nom_client or not email_client or not tel_client or not pays_client or sexe_client == "Sélectionner":
@@ -691,6 +691,7 @@ if check_password():
     if st.sidebar.button("🔴 DÉCONNEXION", use_container_width=True):
         st.session_state.clear()
         st.rerun()
+
 
 
 
