@@ -7,3 +7,4 @@ pandas
 fpdf
 gspread
 google-auth
+st-gsheets-connection
