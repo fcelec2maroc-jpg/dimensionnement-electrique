@@ -182,7 +182,7 @@ if check_password():
                     "Ligne Principale / Abonné (Max 2%)"
                 ])
                 
-c8, c9 = st.columns(2)
+                c8, c9 = st.columns(2)
                 methode_pose = c8.selectbox("Méthode de pose (NF C 15-100)", [
                     "Méthode A (Encastré dans paroi isolante)", 
                     "Méthode B (Sous conduit apparent ou encastré)", 
@@ -749,5 +749,6 @@ c8, c9 = st.columns(2)
     if st.sidebar.button("🔴 DÉCONNEXION", use_container_width=True):
         st.session_state.clear()
         st.rerun()
+
 
 
