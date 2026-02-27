@@ -140,11 +140,11 @@ if check_password():
     """, unsafe_allow_html=True)
     st.sidebar.markdown("---")
 
-    # ---------------------------------------------------------
+# ---------------------------------------------------------
     # MODULE 1 : CARNET DE CÂBLES
     # ---------------------------------------------------------
     if menu == "🔌 1. Carnet de Câbles":
-        st.title("🔌 Dimensionnement des Lignes")
+        st.title("🔌 Dimensionnement des Lignes (NF C 15-100)")
         
         with st.container(border=True):
             st.markdown("#### 📋 Identification de la ligne")
@@ -162,7 +162,7 @@ if check_password():
                 p_w = c2.number_input("Puissance (W)", min_value=0.0, value=3500.0)
                 longueur = c3.number_input("Longueur (m)", min_value=1.0, value=50.0)
                 
-                c5, c6, c7, c8 = st.columns(4)
+                c5, c6, c7 = st.columns(3)
                 nature = c5.selectbox("Métal", ["Cuivre", "Aluminium"])
                 
                 type_cable = c6.selectbox("Type de Câble", [
@@ -181,9 +181,17 @@ if check_password():
                     "Chauffage / Cuisson (Max 5%)",
                     "Ligne Principale / Abonné (Max 2%)"
                 ])
-                cos_phi = c8.slider("Cos φ", 0.7, 1.0, 0.85)
+                
+                c8, c9 = st.columns(2)
+                methode_pose = c8.selectbox("Méthode de pose (Définit le courant Iz)", [
+                    "Encastré (Conduit dans mur) - Méthode B", 
+                    "Apparent (Fixé au mur) - Méthode C", 
+                    "Chemin de câbles perforé - Méthode E/F"
+                ])
+                cos_phi = c9.slider("Cos φ", 0.7, 1.0, 0.85)
 
                 if st.form_submit_button("Calculer et Ajouter au Carnet"):
+                    # 1. PARAMÈTRES ÉLECTRIQUES
                     V = 230 if "230V" in tension else 400
                     rho = 0.0225 if "Cuivre" in nature else 0.036
                     b = 2 if "230V" in tension else 1
@@ -192,22 +200,50 @@ if check_password():
                     elif "2%" in type_charge: du_max = 2.0
                     else: du_max = 5.0
 
+                    # 2. CALCUL DU COURANT D'EMPLOI (Ib) ET DISJONCTEUR (In)
                     Ib = p_w / (V * cos_phi) if b == 2 else p_w / (V * math.sqrt(3) * cos_phi)
                     calibres = [10, 16, 20, 25, 32, 40, 50, 63, 80, 100, 125, 160, 200, 250, 400, 630, 800, 1000]
                     In = next((x for x in calibres if x >= Ib), 1000)
                     
-                    S_calc = (b * rho * longueur * Ib) / ((du_max / 100) * V)
                     sections = [1.5, 2.5, 4, 6, 10, 16, 25, 35, 50, 70, 95, 120, 150, 185, 240, 300]
-                    S_ret = next((s for s in sections if s >= S_calc), 300)
                     
+                    # 3. CONTRAINTE DE CHUTE DE TENSION (dU)
+                    S_calc_du = (b * rho * longueur * Ib) / ((du_max / 100) * V)
+                    S_ret_du = next((s for s in sections if s >= S_calc_du), 300)
+
+                    # 4. CONTRAINTE THERMIQUE (Iz >= In)
+                    # Base de données simplifiée NF C 15-100 (Courant admissible pour 3 conducteurs chargés)
+                    dict_iz = {
+                        "Encastré (Conduit dans mur) - Méthode B": {1.5: 17.5, 2.5: 24, 4: 32, 6: 41, 10: 57, 16: 76, 25: 101, 35: 125, 50: 151, 70: 192, 95: 232, 120: 269, 150: 309, 185: 353, 240: 415, 300: 477},
+                        "Apparent (Fixé au mur) - Méthode C": {1.5: 19.5, 2.5: 27, 4: 36, 6: 46, 10: 63, 16: 85, 25: 112, 35: 138, 50: 168, 70: 213, 95: 258, 120: 299, 150: 344, 185: 392, 240: 461, 300: 530},
+                        "Chemin de câbles perforé - Méthode E/F": {1.5: 23, 2.5: 31, 4: 42, 6: 54, 10: 75, 16: 100, 25: 135, 35: 169, 50: 207, 70: 268, 95: 328, 120: 382, 150: 441, 185: 506, 240: 599, 300: 693}
+                    }
+                    
+                    # Facteurs de correction
+                    k_al = 0.78 if "Aluminium" in nature else 1.0
+                    k_mono = 1.15 if "230V" in tension else 1.0 # Le monophasé chauffe moins
+                    
+                    S_ret_iz = 300
+                    for s in sections:
+                        Iz_calc = dict_iz[methode_pose][s] * k_al * k_mono
+                        if Iz_calc >= In:
+                            S_ret_iz = s
+                            break
+
+                    # 5. SECTION FINALE (On garde la plus grande des deux contraintes)
+                    S_ret = max(S_ret_du, S_ret_iz)
+                    
+                    # Calculs réels avec la section finale
+                    Iz_reel = dict_iz[methode_pose][S_ret] * k_al * k_mono
                     du_reel_pct = (((b * rho * longueur * Ib) / S_ret) / V) * 100
 
+                    # 6. SAUVEGARDE
                     st.session_state.projet["cables"].append({
                         "Tableau": nom_tab_cables, "Repère": ref_c, "Type Câble": type_cable, "Métal": nature, 
-                        "Tension": tension, "P(W)": p_w, "Long.(m)": longueur,
-                        "Ib(A)": round(Ib, 1), "Calibre(A)": In, "Section(mm2)": S_ret, "dU(%)": round(du_reel_pct, 2)
+                        "Pose": methode_pose.split(" - ")[1], "Tension": tension, "P(W)": p_w, "Long.(m)": longueur,
+                        "Ib(A)": round(Ib, 1), "Calibre(A)": In, "Iz(A)": round(Iz_reel, 1), "Section(mm2)": S_ret, "dU(%)": round(du_reel_pct, 2)
                     })
-                    st.success(f"Circuit '{ref_c}' calculé avec succès : {type_cable} {S_ret} mm² protégé par {In}A.")
+                    st.success(f"Circuit calculé : Section {S_ret} mm² (Iz = {round(Iz_reel,1)}A) protégée par un disjoncteur de {In}A.")
 
         if st.session_state.projet["cables"]:
             st.markdown("### 📑 Carnet de Câbles")
@@ -225,8 +261,9 @@ if check_password():
                 pdf.set_font("Helvetica", "B", 8)
                 pdf.set_fill_color(200, 200, 200)
                 
-                headers = ["Tab.", "Repere", "Type Cable", "U", "L(m)", "Ib(A)", "Disj.", "Section", "dU(%)"]
-                widths = [18, 25, 35, 10, 12, 15, 15, 42, 18] # Somme exacte = 190
+                # Mise à jour des colonnes du PDF pour inclure Iz et la Pose
+                headers = ["Tab.", "Repere", "Type Cable", "L(m)", "Ib(A)", "In(A)", "Iz(A)", "Section + Pose", "dU(%)"]
+                widths = [15, 25, 25, 12, 15, 15, 15, 50, 18] # Somme exacte = 190
                 
                 for i in range(len(headers)): 
                     pdf.cell(widths[i], 8, headers[i], 1, 0, 'C', True)
@@ -237,17 +274,21 @@ if check_password():
                     pdf.cell(widths[0], 8, sanitize_text(row.get("Tableau", "TGBT"), 12), 1)
                     pdf.cell(widths[1], 8, sanitize_text(row["Repère"], 18), 1)
                     
-                    raw_type = row.get("Type Câble", "U1000 R2V")
-                    clean_type = sanitize_text(raw_type.split(" (")[0], 25) 
+                    clean_type = sanitize_text(row.get("Type Câble", "U1000 R2V").split(" (")[0], 25) 
                     pdf.cell(widths[2], 8, clean_type, 1, 0, 'C')
                     
-                    pdf.cell(widths[3], 8, str(row["Tension"])[0:3], 1, 0, 'C')
-                    pdf.cell(widths[4], 8, str(row["Long.(m)"]), 1, 0, 'C')
-                    pdf.cell(widths[5], 8, str(row["Ib(A)"]), 1, 0, 'C')
+                    pdf.cell(widths[3], 8, str(row["Long.(m)"]), 1, 0, 'C')
+                    pdf.cell(widths[4], 8, str(row["Ib(A)"]), 1, 0, 'C')
+                    
                     pdf.set_font("Helvetica", "B", 8)
-                    pdf.cell(widths[6], 8, f"{row['Calibre(A)']}A", 1, 0, 'C')
-                    pdf.set_text_color(255, 100, 0)
-                    pdf.cell(widths[7], 8, f"{row['Section(mm2)']} mm2", 1, 0, 'C')
+                    pdf.cell(widths[5], 8, f"{row['Calibre(A)']}A", 1, 0, 'C')
+                    pdf.set_text_color(0, 128, 0) # Iz en vert
+                    pdf.cell(widths[6], 8, f"{row.get('Iz(A)', '-')}A", 1, 0, 'C')
+                    
+                    pdf.set_text_color(255, 100, 0) # Section en orange
+                    # Concaténation de la section et de la méthode de pose
+                    pdf.cell(widths[7], 8, f"{row['Section(mm2)']} mm2 ({row.get('Pose', 'B')})", 1, 0, 'C')
+                    
                     pdf.set_text_color(0, 0, 0)
                     pdf.set_font("Helvetica", "", 8)
                     pdf.cell(widths[8], 8, str(row["dU(%)"]), 1, 1, 'C')
@@ -258,7 +299,6 @@ if check_password():
                 st.download_button("📥 Télécharger PDF", bytes(generate_pdf_cables()), f"Cables_{sanitize_text(st.session_state.projet['info']['nom'])}.pdf")
             if col_btn2.button("🗑️ Vider le Carnet"):
                 st.session_state.projet["cables"] = []; st.rerun()
-
     # ---------------------------------------------------------
     # MODULE 2 : ARCHITECTURE MULTI-TABLEAUX
     # ---------------------------------------------------------
@@ -704,3 +744,4 @@ if check_password():
     if st.sidebar.button("🔴 DÉCONNEXION", use_container_width=True):
         st.session_state.clear()
         st.rerun()
+
