@@ -182,11 +182,13 @@ if check_password():
                     "Ligne Principale / Abonné (Max 2%)"
                 ])
                 
-                c8, c9 = st.columns(2)
-                methode_pose = c8.selectbox("Méthode de pose (Définit le courant Iz)", [
-                    "Encastré (Conduit dans mur) - Méthode B", 
-                    "Apparent (Fixé au mur) - Méthode C", 
-                    "Chemin de câbles perforé - Méthode E/F"
+c8, c9 = st.columns(2)
+                methode_pose = c8.selectbox("Méthode de pose (NF C 15-100)", [
+                    "Méthode A (Encastré dans paroi isolante)", 
+                    "Méthode B (Sous conduit apparent ou encastré)", 
+                    "Méthode C (Câble fixé au mur / apparent)",
+                    "Méthode D (Enterré dans le sol)",
+                    "Méthode E/F (Chemin de câbles / Air libre)"
                 ])
                 cos_phi = c9.slider("Cos φ", 0.7, 1.0, 0.85)
 
@@ -211,17 +213,18 @@ if check_password():
                     S_calc_du = (b * rho * longueur * Ib) / ((du_max / 100) * V)
                     S_ret_du = next((s for s in sections if s >= S_calc_du), 300)
 
-                    # 4. CONTRAINTE THERMIQUE (Iz >= In)
-                    # Base de données simplifiée NF C 15-100 (Courant admissible pour 3 conducteurs chargés)
+                    # 4. CONTRAINTE THERMIQUE (Iz >= In) - Tableaux 52H / 52J
                     dict_iz = {
-                        "Encastré (Conduit dans mur) - Méthode B": {1.5: 17.5, 2.5: 24, 4: 32, 6: 41, 10: 57, 16: 76, 25: 101, 35: 125, 50: 151, 70: 192, 95: 232, 120: 269, 150: 309, 185: 353, 240: 415, 300: 477},
-                        "Apparent (Fixé au mur) - Méthode C": {1.5: 19.5, 2.5: 27, 4: 36, 6: 46, 10: 63, 16: 85, 25: 112, 35: 138, 50: 168, 70: 213, 95: 258, 120: 299, 150: 344, 185: 392, 240: 461, 300: 530},
-                        "Chemin de câbles perforé - Méthode E/F": {1.5: 23, 2.5: 31, 4: 42, 6: 54, 10: 75, 16: 100, 25: 135, 35: 169, 50: 207, 70: 268, 95: 328, 120: 382, 150: 441, 185: 506, 240: 599, 300: 693}
+                        "Méthode A (Encastré dans paroi isolante)": {1.5: 14.5, 2.5: 19.5, 4: 26, 6: 34, 10: 46, 16: 61, 25: 80, 35: 99, 50: 119, 70: 151, 95: 182, 120: 210, 150: 240, 185: 273, 240: 321, 300: 367},
+                        "Méthode B (Sous conduit apparent ou encastré)": {1.5: 17.5, 2.5: 24, 4: 32, 6: 41, 10: 57, 16: 76, 25: 101, 35: 125, 50: 151, 70: 192, 95: 232, 120: 269, 150: 309, 185: 353, 240: 415, 300: 477},
+                        "Méthode C (Câble fixé au mur / apparent)": {1.5: 19.5, 2.5: 27, 4: 36, 6: 46, 10: 63, 16: 85, 25: 112, 35: 138, 50: 168, 70: 213, 95: 258, 120: 299, 150: 344, 185: 392, 240: 461, 300: 530},
+                        "Méthode D (Enterré dans le sol)": {1.5: 22, 2.5: 29, 4: 37, 6: 46, 10: 61, 16: 79, 25: 101, 35: 122, 50: 144, 70: 178, 95: 211, 120: 240, 150: 271, 185: 304, 240: 351, 300: 396},
+                        "Méthode E/F (Chemin de câbles / Air libre)": {1.5: 23, 2.5: 31, 4: 42, 6: 54, 10: 75, 16: 100, 25: 135, 35: 169, 50: 207, 70: 268, 95: 328, 120: 382, 150: 441, 185: 506, 240: 599, 300: 693}
                     }
                     
-                    # Facteurs de correction
+                    # Facteurs de correction simplifiés
                     k_al = 0.78 if "Aluminium" in nature else 1.0
-                    k_mono = 1.15 if "230V" in tension else 1.0 # Le monophasé chauffe moins
+                    k_mono = 1.15 if "230V" in tension else 1.0
                     
                     S_ret_iz = 300
                     for s in sections:
@@ -230,20 +233,22 @@ if check_password():
                             S_ret_iz = s
                             break
 
-                    # 5. SECTION FINALE (On garde la plus grande des deux contraintes)
+                    # 5. SECTION FINALE
                     S_ret = max(S_ret_du, S_ret_iz)
                     
-                    # Calculs réels avec la section finale
                     Iz_reel = dict_iz[methode_pose][S_ret] * k_al * k_mono
                     du_reel_pct = (((b * rho * longueur * Ib) / S_ret) / V) * 100
+                    
+                    # On extrait juste la lettre de la méthode (A, B, C, D ou E/F) pour le tableau
+                    lettre_pose = methode_pose.split(" ")[1]
 
                     # 6. SAUVEGARDE
                     st.session_state.projet["cables"].append({
                         "Tableau": nom_tab_cables, "Repère": ref_c, "Type Câble": type_cable, "Métal": nature, 
-                        "Pose": methode_pose.split(" - ")[1], "Tension": tension, "P(W)": p_w, "Long.(m)": longueur,
+                        "Pose": lettre_pose, "Tension": tension, "P(W)": p_w, "Long.(m)": longueur,
                         "Ib(A)": round(Ib, 1), "Calibre(A)": In, "Iz(A)": round(Iz_reel, 1), "Section(mm2)": S_ret, "dU(%)": round(du_reel_pct, 2)
                     })
-                    st.success(f"Circuit calculé : Section {S_ret} mm² (Iz = {round(Iz_reel,1)}A) protégée par un disjoncteur de {In}A.")
+                    st.success(f"Circuit calculé : Section {S_ret} mm² (Iz = {round(Iz_reel,1)}A, Méthode {lettre_pose}) protégée par un disjoncteur de {In}A.")
 
         if st.session_state.projet["cables"]:
             st.markdown("### 📑 Carnet de Câbles")
@@ -744,4 +749,5 @@ if check_password():
     if st.sidebar.button("🔴 DÉCONNEXION", use_container_width=True):
         st.session_state.clear()
         st.rerun()
+
 
