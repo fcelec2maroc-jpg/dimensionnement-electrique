@@ -70,7 +70,7 @@ class FCELEC_Report(FPDF):
         try: self.image("logoFCELEC.png", 10, 8, 25)
         except: pass
         
-        # ⬇️ AJOUT DE LA LIGNE VERTICALE BLEUE A COTÉ DU LOGO ⬇️
+        # AJOUT DE LA LIGNE VERTICALE BLEUE A COTÉ DU LOGO
         self.set_draw_color(2, 136, 209) # Bleu FC ELEC
         self.set_line_width(0.6)
         self.line(38, 8, 38, 23)
@@ -489,7 +489,7 @@ if check_password():
                 pdf.set_fill_color(230, 230, 230)
                 pdf.set_text_color(0, 0, 0)
                 
-                # ⬇️ REDIMENSIONNEMENT DES COLONNES DU PDF ET SUPPRESSION DE LA POSE ⬇️
+                # REDIMENSIONNEMENT DES COLONNES DU PDF ET SUPPRESSION DE LA POSE
                 headers = ["Tab.", "Repere", "Type Cable", "L(m)", "Ib(A)", "In(A)", "Iz(A)", "Section", "dU(%)"]
                 widths = [14, 26, 40, 12, 15, 15, 15, 35, 18] # Total exact = 190
                 
@@ -520,13 +520,28 @@ if check_password():
                     pdf.set_text_color(0, 0, 0)
                     pdf.set_font("Helvetica", "", 8)
                     pdf.cell(widths[8], 8, str(row["dU(%)"]), 1, 1, 'C')
-                return pdf.output()
+                
+                # CORRECTION DE L'ERREUR DE BYTES / FPDF
+                pdf_out = pdf.output(dest='S')
+                return pdf_out.encode('latin-1') if isinstance(pdf_out, str) else bytes(pdf_out)
 
             col_btn1, col_btn2 = st.columns(2)
-            if col_btn1.button("📄 EXPORTER NOTE DE CALCUL (PDF)", type="primary", use_container_width=True):
-                st.download_button("📥 Confirmer Téléchargement PDF", bytes(generate_pdf_cables()), f"Note_Calcul_{sanitize_text(st.session_state.projet['info']['nom'])}.pdf")
-            if col_btn2.button("🗑️ Vider le Carnet", use_container_width=True):
-                st.session_state.projet["cables"] = []; st.rerun()
+            
+            with col_btn1:
+                # Correction: Affichage direct du bouton de téléchargement au lieu d'être caché dans un st.button
+                st.download_button(
+                    label="📄 EXPORTER NOTE DE CALCUL (PDF)",
+                    data=generate_pdf_cables(),
+                    file_name=f"Note_Calcul_{sanitize_text(st.session_state.projet['info']['nom'])}.pdf",
+                    mime="application/pdf",
+                    type="primary",
+                    use_container_width=True
+                )
+            
+            with col_btn2:
+                if st.button("🗑️ Vider le Carnet", use_container_width=True):
+                    st.session_state.projet["cables"] = []
+                    st.rerun()
 
     # =========================================================
     # MODULE 3 : ARCHITECTURE MULTI-TABLEAUX
@@ -655,10 +670,20 @@ if check_password():
                         pdf.set_fill_color(240, 240, 240)
                         pdf.set_text_color(0, 0, 0)
                         pdf.cell(190, 10, f"PUISSANCE SOUSCRITE ESTIMEE (Cos phi 0.8) : {kva_estime} kVA", border=1, ln=True, align="C", fill=True)
-                        return pdf.output()
+                        
+                        # CORRECTION DE L'ERREUR DE BYTES / FPDF
+                        pdf_out = pdf.output(dest='S')
+                        return pdf_out.encode('latin-1') if isinstance(pdf_out, str) else bytes(pdf_out)
 
-                    if st.button("📄 EXPORTER BILAN (PDF)", type="primary", use_container_width=True):
-                        st.download_button("📥 Confirmer Téléchargement", bytes(generate_pdf_bilan()), f"Bilan_{sanitize_text(st.session_state.projet['info']['nom'])}.pdf")
+                    # Affichage direct du bouton
+                    st.download_button(
+                        label="📄 EXPORTER BILAN DE PUISSANCE (PDF)",
+                        data=generate_pdf_bilan(),
+                        file_name=f"Bilan_{sanitize_text(st.session_state.projet['info']['nom'])}.pdf",
+                        mime="application/pdf",
+                        type="primary",
+                        use_container_width=True
+                    )
 
     # =========================================================
     # MODULE 4 : NOMENCLATURE & DEVIS
